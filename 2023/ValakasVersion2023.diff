@@ -1,0 +1,3134 @@
+diff --git dist/db_installer/sql/game/grandboss_data.sql dist/db_installer/sql/game/grandboss_data.sql
+index 7102b694272..bd2ce85e24d 100644
+--- dist/db_installer/sql/game/grandboss_data.sql
++++ dist/db_installer/sql/game/grandboss_data.sql
+@@ -18,7 +18,7 @@ INSERT IGNORE INTO `grandboss_data` (`boss_id`,`loc_x`,`loc_y`,`loc_z`,`heading`
+ (29325, 43400, 16504, -4395, 0, 247117958, 177258), -- Orfen
+ (29391, 116033, 17447, 10107, -25348, 53342293, 18000), -- Baium
+ (29068, 185708, 114298, -8221,32768, 1240440638, 201454), -- Antharas
+-(29028, -105200, -253104, -15264, 0, 1240440638, 201454), -- Valakas
++(29415, -105200, -253104, -15264, 0, 2566620002, 137781), -- Valakas
+ (29240, 0, 0, 0, 0, 498728877, 95237), -- Lindvior
+ (29197, 81208, -182095, -9895, 0, 549579599.71479, 22800), -- Trasken
+ (29118, 0, 0, 0, 0, 4109288, 1220547), -- Beleth
+diff --git dist/game/config/GrandBoss.ini dist/game/config/GrandBoss.ini
+index d4203e44e30..c22eb9b7d91 100644
+--- dist/game/config/GrandBoss.ini
++++ dist/game/config/GrandBoss.ini
+@@ -1,15 +1,20 @@
+ # ---------------------------------------------------------------------------
+-# Valakas
++# Valakas (2023)
+ # ---------------------------------------------------------------------------
+ 
+ # Delay of appearance time of Valakas. Value is minute. Range 3-60
+-ValakasWaitTime = 30
++# Aligned with: private static final int VALAKAS_WAIT_TIME = 20
++ValakasWaitTime = 20
+ 
+ # Interval time of Valakas. Value is hour. Range 1-480
++# Based on KR Wiki: 11 Days minimum.
++# Aligned with: private static final int VALAKAS_SPAWN_INTERVAL = 264
+ IntervalOfValakasSpawn = 264
+ 
+ # Random interval. Range 1-192
+-RandomOfValakasSpawn = 72
++# Based on KR Wiki: Up to +6 Days (Total cycle 11 ~ 17 days).
++# Aligned with: private static final int VALAKAS_SPAWN_RANDOM = 144
++RandomOfValakasSpawn = 144
+ 
+ # Does Valakas recognizes presence of a Hero player.
+ ValakasRecognizeHero = True
+diff --git dist/game/data/DoorData.xml dist/game/data/DoorData.xml
+index 144b94bd3d8..c85fa33766c 100644
+--- dist/game/data/DoorData.xml
++++ dist/game/data/DoorData.xml
+@@ -16529,7 +16529,7 @@
+ 		</nodes>
+ 		<location x="189480" y="-108511" z="-964" />
+ 		<stats basePDef="644" baseMDef="518" baseHpMax="126600" />
+-		<status showHp="false" />
++		<status targetable="false" showHp="false" />
+ 		<openStatus default="close" closeTime="3600" />
+ 	</door>
+ 	<door id="25140006" name="Godad_Dragoncave_S.1F_UP.Godad_DC_door">
+@@ -16541,7 +16541,7 @@
+ 		</nodes>
+ 		<location x="191458" y="-108107" z="-962" />
+ 		<stats basePDef="644" baseMDef="518" baseHpMax="126600" />
+-		<status showHp="false" />
++		<status targetable="false" showHp="false" />
+ 		<openStatus default="close" closeTime="3600" />
+ 	</door>
+ 	
+diff --git dist/game/data/html/admin/grandboss/grandboss.htm dist/game/data/html/admin/grandboss/grandboss.htm
+index 83ebe2f1368..a003c83bf66 100644
+--- dist/game/data/html/admin/grandboss/grandboss.htm
++++ dist/game/data/html/admin/grandboss/grandboss.htm
+@@ -34,6 +34,6 @@
+ <button value="Orfen" action="bypass admin_grandboss 29325" width=200 height=21 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF"><br1>
+ <button value="Queen Ant" action="bypass admin_grandboss 29381" width=200 height=21 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF"><br1>
+ <button value="Trasken" action="bypass admin_grandboss 29197" width=200 height=21 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF"><br1>
+-<button value="Valakas" action="bypass admin_grandboss 29028" width=200 height=21 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF"><br1>
++<button value="Valakas" action="bypass admin_grandboss 29415" width=200 height=21 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF"><br1>
+ </center>
+ </body></html>
+\ No newline at end of file
+diff --git dist/game/data/html/default/31385.htm dist/game/data/html/default/31385.htm
+index 7eecdd2eaf6..8cd1174e992 100644
+--- dist/game/data/html/default/31385.htm
++++ dist/game/data/html/default/31385.htm
+@@ -1,3 +1,12 @@
+-<html><body>[Whispering]<br>
+-<font color="LEVEL">Will you confront Valakas?</font><br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h npc_%objectId%_Quest ValakasTeleporters">Enter the nest</Button></body></html>
+\ No newline at end of file
++<html><body>Heart of Volcano:<br>
++A loud voice is heard plunging everybody in trepidation.<br>
++<font color="LEVEL">He was forsaken since his birth.<br>
++His mother was deceived by her children.<br>
++And he came down on earth<br>
++to take revenge.<br>
++Herald of Darkness!<br>
++How dare you challenge Valakas?</font><br>
++(Maximum 200 characters can challenge Valakas.)<br>
++
++<Button ALIGN=LEFT ICON="TELEPORT" action="bypass -h npc_%objectId%_Quest ValakasTeleporters teleport_lair">Go to Valakas' Lair</Button>
++</body></html>
+\ No newline at end of file
+diff --git dist/game/data/html/default/34745-1.htm dist/game/data/html/default/34745-1.htm
+new file mode 100644
+index 00000000000..893ebda955c
+--- /dev/null
++++ dist/game/data/html/default/34745-1.htm
+@@ -0,0 +1,7 @@
++<html><body>Taking Revenge on Valakas Boromir:<br>
++I came here to fight Valakas, trusting Klein who pretended to be Fire Dragon's Watcher. I thought Valakas became much weaker.<br>
++But I was wrong. Now all of my allies are dead, and I cannot join them because of the Fire Dragon's curse.<br>
++I want to revenge my comrades, but I no longer have the strength to fight. All I can do is to send you to the Heart of Volcano instead of Klein, and I'll make him pay someday.<br>
++Go through the Heart of Volcano and you'll meet Valakas.<br>
++<Button ALIGN=LEFT ICON="RETURN" action="bypass npc_%objectId%_Chat 0">Back</Button>
++</body></html>
+\ No newline at end of file
+diff --git dist/game/data/html/default/34745.htm dist/game/data/html/default/34745.htm
+new file mode 100644
+index 00000000000..b335527e691
+--- /dev/null
++++ dist/game/data/html/default/34745.htm
+@@ -0,0 +1,5 @@
++<html><body>Taking Revenge on Valakas Boromir:<br>
++A-ah! What do you need? I'm not even going to listen if it's not about defeating Valakas.<br>
++<Button ALIGN=LEFT ICON="NORMAL" action="bypass npc_%objectId%_Chat 1">Tell me about yourself</Button>
++<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h npc_%objectId%_Quest ValakasTeleporters teleport_hall">Send me to the Heart of Volcano</Button>
++</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/bosses/Valakas/Valakas.java dist/game/data/scripts/ai/bosses/Valakas/Valakas.java
+index a882ddbf491..3756a116972 100644
+--- dist/game/data/scripts/ai/bosses/Valakas/Valakas.java
++++ dist/game/data/scripts/ai/bosses/Valakas/Valakas.java
+@@ -1,44 +1,49 @@
+ /*
+- * This file is part of the L2J Mobius project.
++ * Copyright (c) 2013 L2jMobius
+  * 
+- * This program is free software: you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation, either version 3 of the License, or
+- * (at your option) any later version.
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
+  * 
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+- * General Public License for more details.
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
+  * 
+- * You should have received a copy of the GNU General Public License
+- * along with this program. If not, see <http://www.gnu.org/licenses/>.
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
++ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+ package ai.bosses.Valakas;
+ 
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.concurrent.atomic.AtomicInteger;
+ 
++import org.l2jmobius.commons.threads.ThreadPool;
++import org.l2jmobius.commons.util.Rnd;
+ import org.l2jmobius.gameserver.ai.Intention;
+-import org.l2jmobius.gameserver.config.GrandBossConfig;
+-import org.l2jmobius.gameserver.data.xml.SkillData;
+-import org.l2jmobius.gameserver.geoengine.GeoEngine;
+ import org.l2jmobius.gameserver.managers.GrandBossManager;
+ import org.l2jmobius.gameserver.managers.ZoneManager;
+ import org.l2jmobius.gameserver.model.Location;
+ import org.l2jmobius.gameserver.model.StatSet;
+ import org.l2jmobius.gameserver.model.World;
++import org.l2jmobius.gameserver.model.actor.Creature;
+ import org.l2jmobius.gameserver.model.actor.Npc;
+ import org.l2jmobius.gameserver.model.actor.Playable;
+ import org.l2jmobius.gameserver.model.actor.Player;
+-import org.l2jmobius.gameserver.model.actor.enums.player.MountType;
+ import org.l2jmobius.gameserver.model.actor.instance.GrandBoss;
+ import org.l2jmobius.gameserver.model.script.Script;
+-import org.l2jmobius.gameserver.model.skill.BuffInfo;
+ import org.l2jmobius.gameserver.model.skill.Skill;
++import org.l2jmobius.gameserver.model.skill.SkillCaster;
+ import org.l2jmobius.gameserver.model.skill.holders.SkillHolder;
+ import org.l2jmobius.gameserver.model.zone.ZoneType;
+ import org.l2jmobius.gameserver.model.zone.type.NoRestartZone;
++import org.l2jmobius.gameserver.network.NpcStringId;
+ import org.l2jmobius.gameserver.network.serverpackets.ExShowScreenMessage;
+ import org.l2jmobius.gameserver.network.serverpackets.PlaySound;
+ import org.l2jmobius.gameserver.network.serverpackets.SocialAction;
+@@ -46,45 +51,38 @@ import org.l2jmobius.gameserver.network.serverpackets.SpecialCamera;
+ import org.l2jmobius.gameserver.util.LocationUtil;
+ 
+ /**
+- * Valakas' AI.
+- * @author Tryskell
++ * Valakas AI - version 2023
++ * @author Notorion
+  */
+ public class Valakas extends Script
+ {
+-	// NPC
+-	private static final int VALAKAS = 29028;
+ 	
+-	// Skills
+-	private static final int VALAKAS_REGENERATION = 4691;
+-	private static final SkillHolder VALAKAS_LAVA_SKIN = new SkillHolder(4680, 1);
++	// NPC IDs
++	private static final int VALAKAS = 29415; // Valakas Lv.130
++	private static final int INVISIBLE_NPC = 18919;
+ 	
+-	private static final SkillHolder[] VALAKAS_REGULAR_SKILLS =
+-	{
+-		new SkillHolder(4681, 1), // Valakas Trample
+-		new SkillHolder(4682, 1), // Valakas Trample
+-		new SkillHolder(4683, 1), // Valakas Dragon Breath
+-		new SkillHolder(4689, 1), // Valakas Fear TODO: has two levels only level one is used.
+-	};
++	// Attack Skills - Valakas
++	private static final SkillHolder VALAKAS_TRAMPLE_1 = new SkillHolder(34863, 1);
++	private static final SkillHolder VALAKAS_TRAMPLE_2 = new SkillHolder(34864, 1);
++	private static final SkillHolder VALAKAS_TAIL_RASH = new SkillHolder(34865, 1);
++	private static final SkillHolder VALAKAS_TAIL_STRIKE = new SkillHolder(34867, 1);
++	private static final SkillHolder VALAKAS_DRAGON_BREATH = new SkillHolder(34866, 1);
++	private static final SkillHolder VALAKAS_INHALE = new SkillHolder(34877, 1);
+ 	
+-	private static final SkillHolder[] VALAKAS_LOWHP_SKILLS =
+-	{
+-		new SkillHolder(4681, 1), // Valakas Trample
+-		new SkillHolder(4682, 1), // Valakas Trample
+-		new SkillHolder(4683, 1), // Valakas Dragon Breath
+-		new SkillHolder(4689, 1), // Valakas Fear TODO: has two levels only level one is used.
+-		new SkillHolder(4690, 1), // Valakas Meteor Storm
+-	};
++	// Meteor Mechanic to Npc Invisible
++	private static final SkillHolder VALAKAS_METEOR_STORM = new SkillHolder(34872, 1);
+ 	
+-	private static final SkillHolder[] VALAKAS_AOE_SKILLS =
+-	{
+-		new SkillHolder(4683, 1), // Valakas Dragon Breath
+-		new SkillHolder(4684, 1), // Valakas Dragon Breath
+-		new SkillHolder(4685, 1), // Valakas Tail Stomp
+-		new SkillHolder(4686, 1), // Valakas Tail Stomp
+-		new SkillHolder(4688, 1), // Valakas Stun
+-		new SkillHolder(4689, 1), // Valakas Fear TODO: has two levels only level one is used.
+-		new SkillHolder(4690, 1), // Valakas Meteor Storm
+-	};
++	// Mechanic Cycle Skills
++	private static final SkillHolder VALAKAS_BARRIER = new SkillHolder(34875, 1);
++	private static final SkillHolder VALAKAS_EARTHQUAKE_CAST = new SkillHolder(34870, 1);
++	private static final SkillHolder VALAKAS_FIRE_EARTHQUAKER_DMG = new SkillHolder(34871, 1);
++	private static final SkillHolder VALAKAS_BARRIER_BREAK = new SkillHolder(34876, 1);
++	private static final SkillHolder VALAKAS_WEAKNESS = new SkillHolder(34874, 1);
++	private static final SkillHolder VALAKAS_FURY = new SkillHolder(34869, 1);
++	private static final SkillHolder VALAKAS_BERSERK = new SkillHolder(34873, 1);
++	
++	// Messages
++	private static final NpcStringId VALAKAS_CHALLENGE_MSG = NpcStringId.getNpcStringId(1000519);
+ 	
+ 	// Locations
+ 	private static final Location[] TELEPORT_CUBE_LOCATIONS =
+@@ -105,55 +103,85 @@ public class Valakas extends Script
+ 		new Location(215456, -117328, -1392),
+ 		new Location(213200, -118160, -1424)
+ 	};
++	
++	// Location
+ 	private static final Location VALAKAS_HIDDEN_LOC = new Location(220963, -104895, -1620);
+ 	private static final Location ATTACKER_REMOVE = new Location(150037, -57255, -2976);
+-	private static final Location VALAKAS_LAIR = new Location(212852, -114842, -1632);
++	private static final Location VALAKAS_LAIR = new Location(212852, -114842, -1632, 63000);
+ 	private static final Location VALAKAS_REGENERATION_LOC = new Location(-105200, -253104, -15264);
+ 	
+-	// Valakas status.
+-	private static final byte DORMANT = 0; // Valakas is spawned and no one has entered yet. Entry is unlocked.
+-	private static final byte WAITING = 1; // Valakas is spawned and someone has entered, triggering a 30 minute window for additional people to enter. Entry is unlocked.
+-	private static final byte FIGHTING = 2; // Valakas is engaged in battle, annihilating his foes. Entry is locked.
+-	private static final byte DEAD = 3; // Valakas has been killed. Entry is locked.
++	// Status
++	private static final byte DORMANT = 0;
++	private static final byte WAITING = 1;
++	private static final byte FIGHTING = 2;
++	private static final byte DEAD = 3;
++	
++	private static final int VALAKAS_WAIT_TIME = 20; // 20 Minutes until Valakas appears (Lair)
++	
++	// Respawn Cycle: 11 ~ 17 Days - info wiki KR
++	private static final int VALAKAS_SPAWN_INTERVAL = 264; // Hours
++	private static final int VALAKAS_SPAWN_RANDOM = 144; // Hours
++	
++	// Configs
++	// Hit Calculation Logic (Estimated based on mechanics/No official data):
++	// 1. Min CC: 49 Players (~28 Active DDs).
++	// 2. Time Window: 10 Seconds.
++	// 3. Avg Speed: 2 hits/sec (1000 AtkSpd).
++	// 4. Math: 28 DDs * 20 hits = 560 Total Hits (Theoretical Max).
++	// 5. Threshold set to 320 (Large safety margin for lag/reaction).
++	// ! CRITICAL: If hits < BARRIER_HIT_REQUIREMENT, Valakas casts a WIPE skill killing ALL players.
++	private static final int BARRIER_HIT_REQUIREMENT = 320;
+ 	
+-	// Misc
++	private static final int FURY_CHANCE = 80;
++	
++	// Zones
+ 	private static final ZoneType BOSS_ZONE = ZoneManager.getInstance().getZoneById(12010);
+ 	private static final NoRestartZone GROUND_ZONE = ZoneManager.getInstance().getZoneById(13010, NoRestartZone.class);
++	
++	// State Variables
+ 	private GrandBoss _valakas = null;
+-	private Playable _actualVictim; // Actual target of Valakas.
+-	private long _timeTracker = 0; // Time tracker for last attack on Valakas.
++	private long _timeTracker = 0;
++	
++	// Atomic State Machine
++	private final AtomicInteger _mechanicStage = new AtomicInteger(0);
++	private final AtomicInteger _barrierHits = new AtomicInteger(0);
++	private boolean _isBarrierHitPhase = false;
++	private boolean _barrierBroken = false;
++	private boolean _furyUsed = false;
++	
++	// Flags
++	private boolean _isMechanicActive = false;
++	private boolean _isPreparingMechanic = false;
++	private boolean _cycleTriggered = false;
++	
++	// Inhale Logic
++	private long _inhaleNextTime = 0;
++	private int _inhaleBurstCount = 0;
++	
++	/**
++	 * Official Korean Wiki - Valakas Raid Revamp Respawn Cycle: 11 ~ 17 Days Level Limit: 120 or higher Participant Limit: 49 minimum / 200 maximum in Lair * Mechanics: year 2023 - You can access the entry NPC "Heart of Volcano" via the NPC "Boromir" located in Goddard Castle Town. - Spawn Timing:
++	 * Valakas will appear in the nest exactly 20 minutes after the first Command Channel members request entry.
++	 */
+ 	
+ 	private Valakas()
+ 	{
+ 		addAttackId(VALAKAS);
+ 		addKillId(VALAKAS);
+ 		addSpawnId(VALAKAS);
+-		addSpellFinishedId(VALAKAS);
+ 		
+ 		final StatSet info = GrandBossManager.getInstance().getStatSet(VALAKAS);
+ 		final int status = GrandBossManager.getInstance().getStatus(VALAKAS);
+ 		
+ 		if (status == DEAD)
+ 		{
+-			// load the unlock date and time for valakas from DB
+ 			final long temp = info.getLong("respawn_time") - System.currentTimeMillis();
+ 			if (temp > 0)
+ 			{
+-				// The time has not yet expired. Mark Valakas as currently locked (dead).
+ 				startQuestTimer("valakas_unlock", temp, null, null);
+ 			}
+ 			else
+ 			{
+-				// The time has expired while the server was offline. Spawn valakas in his cave as DORMANT.
+-				_valakas = (GrandBoss) addSpawn(VALAKAS, VALAKAS_REGENERATION_LOC, false, 0);
+-				_valakas.teleToLocation(VALAKAS_HIDDEN_LOC);
+-				GrandBossManager.getInstance().setStatus(VALAKAS, DORMANT);
+-				GrandBossManager.getInstance().addBoss(_valakas);
+-				
+-				_valakas.setInvul(true);
+-				_valakas.setRunning();
+-				
+-				_valakas.getAI().setIntention(Intention.IDLE);
++				spawnValakas(true);
+ 			}
+ 		}
+ 		else
+@@ -167,234 +195,600 @@ public class Valakas extends Script
+ 			
+ 			_valakas = (GrandBoss) addSpawn(VALAKAS, loc_x, loc_y, loc_z, heading, false, 0);
+ 			GrandBossManager.getInstance().addBoss(_valakas);
+-			
+ 			_valakas.setCurrentHpMp(hp, mp);
+ 			_valakas.setRunning();
+ 			
+-			// Start timers.
+ 			if (status == FIGHTING)
+ 			{
+-				// stores current time for inactivity task.
+ 				_timeTracker = System.currentTimeMillis();
++				startQuestTimer("check_inactivity", 60000, _valakas, null, true);
++				startQuestTimer("manage_skills", 700, _valakas, null, true);
+ 				
+-				startQuestTimer("regen_task", 60000, _valakas, null, true);
+-				startQuestTimer("skill_task", 2000, _valakas, null, true);
++				// Independent Timers
++				startQuestTimer("TASK_METEOR_UPDATED", 45000, _valakas, null);
++				startQuestTimer("TASK_FURY_INDIVIDUAL", 105000, _valakas, null);
+ 			}
+ 			else
+ 			{
+ 				_valakas.teleToLocation(VALAKAS_HIDDEN_LOC);
+ 				_valakas.setInvul(true);
+ 				_valakas.getAI().setIntention(Intention.IDLE);
+-				
+-				// Start timer to lock entry after 30 minutes
+ 				if (status == WAITING)
+ 				{
+-					startQuestTimer("beginning", GrandBossConfig.VALAKAS_WAIT_TIME * 60000, _valakas, null);
++					startQuestTimer("beginning", VALAKAS_WAIT_TIME * 60000, _valakas, null);
+ 				}
+ 			}
+ 		}
+ 	}
+ 	
++	private void spawnValakas(boolean isDormant)
++	{
++		_valakas = (GrandBoss) addSpawn(VALAKAS, VALAKAS_REGENERATION_LOC, false, 0);
++		_valakas.teleToLocation(VALAKAS_HIDDEN_LOC);
++		GrandBossManager.getInstance().addBoss(_valakas);
++		
++		if (isDormant)
++		{
++			GrandBossManager.getInstance().setStatus(VALAKAS, DORMANT);
++			_valakas.setInvul(true);
++			_valakas.setRunning();
++			_valakas.getAI().setIntention(Intention.IDLE);
++		}
++	}
++	
+ 	@Override
+ 	public String onEvent(String event, Npc npc, Player player)
+ 	{
+-		if (npc != null)
++		if (event.equalsIgnoreCase("valakas_unlock"))
++		{
++			spawnValakas(true);
++			return super.onEvent(event, npc, player);
++		}
++		
++		if (event.equalsIgnoreCase("remove_players"))
++		{
++			BOSS_ZONE.oustAllPlayers();
++			return super.onEvent(event, npc, player);
++		}
++		
++		if (npc == null)
++		{
++			return null;
++		}
++		// cinematic - Tryskell
++		switch (event)
+ 		{
+-			if (event.equalsIgnoreCase("beginning"))
++			case "beginning":
+ 			{
+-				// Stores current time
+ 				_timeTracker = System.currentTimeMillis();
+-				
+-				// Teleport Valakas to his lair.
+ 				npc.teleToLocation(VALAKAS_LAIR);
+-				
+-				// Sound + socialAction.
+ 				startQuestTimer("broadcast_spawn", 100, npc, null);
+ 				
+-				// Launch the cinematic, and tasks (regen + skill).
+-				startQuestTimer("spawn_1", 1700, npc, null); // 1700
+-				startQuestTimer("spawn_2", 3200, npc, null); // 1500
+-				startQuestTimer("spawn_3", 6500, npc, null); // 3300
+-				startQuestTimer("spawn_4", 9400, npc, null); // 2900
+-				startQuestTimer("spawn_5", 12100, npc, null); // 2700
+-				startQuestTimer("spawn_6", 12430, npc, null); // 330
+-				startQuestTimer("spawn_7", 15430, npc, null); // 3000
+-				startQuestTimer("spawn_8", 16830, npc, null); // 1400
+-				startQuestTimer("spawn_9", 23530, npc, null); // 6700 - end of cinematic
+-				startQuestTimer("spawn_10", 26000, npc, null); // 2500 - AI + unlock
+-			}
+-			// Regeneration && inactivity task
+-			else if (event.equalsIgnoreCase("regen_task"))
+-			{
+-				// Inactivity task - 15min
+-				if ((GrandBossManager.getInstance().getStatus(VALAKAS) == FIGHTING) && ((_timeTracker + 900000) < System.currentTimeMillis()))
++				startQuestTimer("spawn_1", 1700, npc, null);
++				startQuestTimer("spawn_2", 3200, npc, null);
++				startQuestTimer("spawn_3", 6500, npc, null);
++				startQuestTimer("spawn_4", 9400, npc, null);
++				startQuestTimer("spawn_5", 12100, npc, null);
++				startQuestTimer("spawn_6", 12430, npc, null);
++				startQuestTimer("spawn_7", 15430, npc, null);
++				startQuestTimer("spawn_8", 16830, npc, null);
++				startQuestTimer("spawn_9", 23530, npc, null);
++				startQuestTimer("spawn_10", 26000, npc, null);
++				startQuestTimer("challenge_message", 28500, npc, null);
++				break;
++			}
++			case "broadcast_spawn":
++			{
++				npc.setInvul(true);
++				npc.disableAllSkills();
++				npc.setTargetable(false);
++				npc.setImmobilized(true);
++				for (Player plyr : BOSS_ZONE.getPlayersInside())
+ 				{
+-					npc.getAI().setIntention(Intention.IDLE);
+-					npc.teleToLocation(VALAKAS_REGENERATION_LOC);
+-					
+-					GrandBossManager.getInstance().setStatus(VALAKAS, DORMANT);
+-					npc.setCurrentHpMp(npc.getMaxHp(), npc.getMaxMp());
+-					
+-					// Drop all players from the zone.
+-					BOSS_ZONE.oustAllPlayers();
+-					
+-					// Cancel skill_task and regen_task.
+-					cancelQuestTimer("regen_task", npc, null);
+-					cancelQuestTimer("skill_task", npc, null);
+-					return null;
++					plyr.sendPacket(new SpecialCamera(npc, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0));
++					plyr.sendPacket(new PlaySound(1, "BS03_A", 0, 0, 0, 0, 0));
++					plyr.sendPacket(new SocialAction(npc.getObjectId(), 3));
+ 				}
++				break;
++			}
++			case "spawn_1":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1800, 180, -1, 1500, 15000, 10000, 0, 0, 1, 0, 0));
++				break;
++			case "spawn_2":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1300, 180, -5, 3000, 15000, 10000, 0, -5, 1, 0, 0));
++				break;
++			case "spawn_3":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 500, 180, -8, 600, 15000, 10000, 0, 60, 1, 0, 0));
++				break;
++			case "spawn_4":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 800, 180, -8, 2700, 15000, 10000, 0, 30, 1, 0, 0));
++				break;
++			case "spawn_5":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 200, 250, 70, 0, 15000, 10000, 30, 80, 1, 0, 0));
++				break;
++			case "spawn_6":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1100, 250, 70, 2500, 15000, 10000, 30, 80, 1, 0, 0));
++				break;
++			case "spawn_7":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 700, 150, 30, 0, 15000, 10000, -10, 60, 1, 0, 0));
++				break;
++			case "spawn_8":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1200, 150, 20, 2900, 15000, 10000, -10, 30, 1, 0, 0));
++				break;
++			case "spawn_9":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 750, 170, -10, 3400, 15000, 4000, 10, -15, 1, 0, 0));
++				break;
++			
++			case "spawn_10":
++			{
++				GrandBossManager.getInstance().setStatus(VALAKAS, FIGHTING);
++				npc.setInvul(false);
++				npc.setImmobilized(false);
++				npc.enableAllSkills();
++				npc.setTargetable(true);
++				npc.getAI().setIntention(Intention.ACTIVE);
++				npc.broadcastInfo();
+ 				
+-				// Verify if "Valakas Regeneration" skill is active.
+-				final BuffInfo info = npc.getEffectList().getBuffInfoBySkillId(VALAKAS_REGENERATION);
+-				final int level = info != null ? info.getSkill().getLevel() : 0;
++				resetMechanicState();
++				_cycleTriggered = false;
+ 				
+-				// Current HPs are inferior to 25% ; apply level 4 of regen skill.
+-				if ((npc.getCurrentHp() < (npc.getMaxHp() / 4)) && (level != 4))
+-				{
+-					npc.setTarget(npc);
+-					npc.doCast(SkillData.getInstance().getSkill(VALAKAS_REGENERATION, 4));
+-				}
+-				// Current HPs are inferior to 50% ; apply level 3 of regen skill.
+-				else if ((npc.getCurrentHp() < ((npc.getMaxHp() * 2) / 4.0)) && (level != 3))
++				// Set Initial Inhale Timer (1m 40s)
++				_inhaleNextTime = System.currentTimeMillis() + 100000;
++				_inhaleBurstCount = 0;
++				
++				startQuestTimer("start_ai_tasks", 2000, npc, null);
++				break;
++			}
++			case "start_ai_tasks":
++			{
++				if (GrandBossManager.getInstance().getStatus(VALAKAS) == FIGHTING)
+ 				{
+-					npc.setTarget(npc);
+-					npc.doCast(SkillData.getInstance().getSkill(VALAKAS_REGENERATION, 3));
++					startQuestTimer("check_inactivity", 60000, npc, null, true);
++					startQuestTimer("manage_skills", 1000, npc, null, true);
++					// Independent Timers
++					// Meteor: 45s start, 20s interval
++					startQuestTimer("TASK_METEOR_UPDATED", 45000, npc, null);
++					// Fury Individual: 1m 45s start
++					startQuestTimer("TASK_FURY_INDIVIDUAL", 105000, npc, null);
+ 				}
+-				// Current HPs are inferior to 75% ; apply level 2 of regen skill.
+-				else if ((npc.getCurrentHp() < ((npc.getMaxHp() * 3) / 4.0)) && (level != 2))
++				break;
++			}
++			
++			case "manage_skills":
++			{
++				manageSkills(npc);
++				break;
++			}
++			
++			// METEOR (ALL + LATERAL)
++			case "TASK_METEOR_UPDATED":
++			{
++				if (GrandBossManager.getInstance().getStatus(VALAKAS) != FIGHTING)
+ 				{
+-					npc.setTarget(npc);
+-					npc.doCast(SkillData.getInstance().getSkill(VALAKAS_REGENERATION, 2));
++					return null;
+ 				}
+-				// Apply level 1.
+-				else if (level != 1)
++				if (!_isMechanicActive)
+ 				{
+-					npc.setTarget(npc);
+-					npc.doCast(SkillData.getInstance().getSkill(VALAKAS_REGENERATION, 1));
++					spawnMeteors(npc); // 8 Random
++					spawnLateralMeteors(npc); // 2 Lateral
+ 				}
++				startQuestTimer("TASK_METEOR_UPDATED", 20000, npc, null); // 20s interval
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("broadcast_spawn"))
++			
++			case "TASK_FURY_INDIVIDUAL":
+ 			{
+-				for (Player plyr : BOSS_ZONE.getPlayersInside())
++				if (GrandBossManager.getInstance().getStatus(VALAKAS) != FIGHTING)
+ 				{
+-					plyr.sendPacket(new PlaySound(1, "BS03_A", 0, 0, 0, 0, 0));
+-					plyr.sendPacket(new SocialAction(npc.getObjectId(), 3));
++					return null;
++				}
++				
++				if (!_isMechanicActive && !_isPreparingMechanic)
++				{
++					startQuestTimer("PRE_FURY_INDIVIDUAL", 1000, npc, null);
+ 				}
++				else
++				{
++					startQuestTimer("TASK_FURY_INDIVIDUAL", 5000, npc, null);
++				}
++				break;
+ 			}
+-			// Spawn cinematic, regen_task and choose of skill.
+-			else if (event.equalsIgnoreCase("spawn_1"))
++			
++			case "PRE_FURY_INDIVIDUAL":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1800, 180, -1, 1500, 15000, 10000, 0, 0, 1, 0, 0));
++				_isPreparingMechanic = true;
++				
++				npc.abortCast();
++				npc.abortAttack();
++				npc.stopMove(null);
++				npc.getAI().setIntention(Intention.IDLE);
++				
++				npc.setTarget(npc);
++				npc.doCast(VALAKAS_TRAMPLE_1.getSkill());
++				
++				startQuestTimer("MSG_FURY_INDIVIDUAL", 5000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_2"))
++			
++			case "MSG_FURY_INDIVIDUAL":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1300, 180, -5, 3000, 15000, 10000, 0, -5, 1, 0, 0));
++				BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(NpcStringId.IT_S_BEEN_A_WHILE_SINCE_ANYONE_MADE_ME_THIS_ANGRY_FEEL_MY_FLAMING_WRATH_AND_RUN_AWAY_IN_FEAR, ExShowScreenMessage.TOP_CENTER, 7000, true));
++				
++				startQuestTimer("CAST_FURY_INDIVIDUAL", 2000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_3"))
++			
++			case "CAST_FURY_INDIVIDUAL":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 500, 180, -8, 600, 15000, 10000, 0, 60, 1, 0, 0));
++				npc.setTarget(npc);
++				npc.getAI().setIntention(Intention.ACTIVE);
++				npc.doCast(VALAKAS_FURY.getSkill());
++				ThreadPool.schedule(() ->
++				{
++					_isPreparingMechanic = false;
++					manageSkills(npc);
++					startQuestTimer("TASK_FURY_INDIVIDUAL", 105000, npc, null);
++				}, 3000);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_4"))
++			
++			case "CLEANSE_TASK":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 800, 180, -8, 2700, 15000, 10000, 0, 30, 1, 0, 0));
++				if ((!_isMechanicActive && !_isPreparingMechanic) || npc.isDead())
++				{
++					return null;
++				}
++				cleanDebuffs(npc);
++				startQuestTimer("CLEANSE_TASK", 500, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_5"))
++			
++			case "PRE_BARRIER_PHASE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 200, 250, 70, 0, 15000, 10000, 30, 80, 1, 0, 0));
++				// STOP Fury Timer (It restarts after cycle)
++				cancelQuestTimer("TASK_FURY_INDIVIDUAL", npc, null);
++				_isPreparingMechanic = true;
++				// Cleanse starts 3s before Mechanic
++				startQuestTimer("PRE_MECHANIC_CLEANSE", 7000, npc, null);
++				// Mechanic starts 10s later
++				startQuestTimer("START_BARRIER_SEQUENCE", 10000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_6"))
++			
++			case "PRE_MECHANIC_CLEANSE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1100, 250, 70, 2500, 15000, 10000, 30, 80, 1, 0, 0));
++				startQuestTimer("CLEANSE_TASK", 100, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_7"))
++			
++			case "START_BARRIER_SEQUENCE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 700, 150, 30, 0, 15000, 10000, -10, 60, 1, 0, 0));
++				if (GrandBossManager.getInstance().getStatus(VALAKAS) != FIGHTING)
++				{
++					return null;
++				}
++				
++				_mechanicStage.set(1);
++				_isBarrierHitPhase = true;
++				_barrierHits.set(0);
++				_barrierBroken = false;
++				
++				_isMechanicActive = true;
++				_isPreparingMechanic = false;
++				
++				npc.disableCoreAI(true);
++				
++				BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(NpcStringId.HOW_DARE_THESE_PUNY_CREATURES_ATTACK_ME_THEY_ARE_NO_MATCH_BOTH_FOR_MY_FLAMES_AND_MY_WRATH, ExShowScreenMessage.TOP_CENTER, 5000, true));
++				
++				toggleAttackSkills(npc, false);
++				
++				npc.stopMove(null);
++				npc.getAI().setIntention(Intention.IDLE);
++				npc.abortCast();
++				npc.abortAttack();
++				npc.setTarget(npc);
++				// Apply Barrier
++				ThreadPool.schedule(() ->
++				{
++					if (npc.isDead())
++					{
++						return;
++					}
++					SkillCaster.triggerCast(npc, npc, VALAKAS_BARRIER.getSkill());
++				}, 500);
++				
++				// Earthquake
++				ThreadPool.schedule(() ->
++				{
++					if (npc.isDead())
++					{
++						return;
++					}
++					npc.setTarget(npc);
++					npc.doCast(VALAKAS_EARTHQUAKE_CAST.getSkill());
++					_mechanicStage.set(2);
++				}, 2000);
++				// Wait 14s (2s + 10s anim + 2s margin)
++				startQuestTimer("BARRIER_RESULT_CHECK", 14000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_8"))
++			
++			case "BARRIER_RESULT_CHECK":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1200, 150, 20, 2900, 15000, 10000, -10, 30, 1, 0, 0));
++				_isBarrierHitPhase = false;
++				
++				if (_barrierBroken)
++				{
++					SkillCaster.triggerCast(npc, npc, VALAKAS_BARRIER_BREAK.getSkill());
++					BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(NpcStringId.VALAKAS_PROTECTIVE_BARRIER_IS_SHATTERED_AND_HIS_FLAMES_ARE_EXTINGUISHED_THE_FIRE_POWER_LEAVES_VALAKAS_WEAKENING_HIM, ExShowScreenMessage.TOP_CENTER, 5000, true));
++					startQuestTimer("APPLY_WEAKNESS", 1000, npc, null);
++				}
++				else
++				{
++					// FAILURE = WIPE + HEAL + MESSAGE
++					// 1. Message (7s)
++					BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(NpcStringId.THE_FIRE_BARRIER_IS_PROTECTING_VALAKAS_RECOVERING_HIS_HP_THE_FIRE_WRATH_FALLS_UPON_THE_WHOLE_AREA, ExShowScreenMessage.TOP_CENTER, 7000, true));
++					// 2. Explosion
++					SkillCaster.triggerCast(npc, npc, VALAKAS_FIRE_EARTHQUAKER_DMG.getSkill());
++					// 2. Wipe Players (Instant Kill in Zone)
++					for (Creature creature : BOSS_ZONE.getCharactersInside())
++					{
++						if ((creature != null) && creature.isPlayer() && !creature.isDead())
++						{
++							creature.doDie(npc);
++						}
++					}
++					// 3. Full Heal
++					npc.setCurrentHp(npc.getMaxHp());
++					// 5. End Mechanic
++					startQuestTimer("RESTART_CYCLE_FAILED", 3000, npc, null);
++				}
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_9"))
++			
++			case "RESTART_CYCLE_FAILED":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 750, 170, -10, 3400, 15000, 4000, 10, -15, 1, 0, 0));
++				// Unlock AI after Wipe
++				_isMechanicActive = false;
++				cancelQuestTimer("CLEANSE_TASK", npc, null);
++				npc.disableCoreAI(false);
++				toggleAttackSkills(npc, true);
++				
++				resetMechanicState();
++				
++				_cycleTriggered = false;
++				
++				// Restart Fury Timer (1m 45s from now)
++				startQuestTimer("TASK_FURY_INDIVIDUAL", 105000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("spawn_10"))
++			
++			case "APPLY_WEAKNESS":
+ 			{
+-				GrandBossManager.getInstance().setStatus(VALAKAS, FIGHTING);
+-				npc.setInvul(false);
++				_mechanicStage.set(3);
++				cancelQuestTimer("CLEANSE_TASK", npc, null);
+ 				
+-				startQuestTimer("regen_task", 60000, npc, null, true);
+-				startQuestTimer("skill_task", 2000, npc, null, true);
++				Skill weakness = VALAKAS_WEAKNESS.getSkill();
++				if (weakness != null)
++				{
++					weakness.applyEffects(npc, npc);
++				}
+ 				
+-				for (Player insidePlayer : BOSS_ZONE.getPlayersInside())
++				ThreadPool.schedule(() ->
+ 				{
+-					if (insidePlayer.isHero() && GrandBossConfig.VALAKAS_RECOGNIZE_HERO)
++					if (npc.isDead())
+ 					{
+-						BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(insidePlayer.getName() + "!!!! You cannot hope to defeat me with your meager strength.", 2, 4000));
+-						break;
++						return;
+ 					}
++					_isMechanicActive = false;
++					npc.disableCoreAI(false);
++					toggleAttackSkills(npc, true);
++					manageSkills(npc);
++				}, 2000);
++				
++				startQuestTimer("WEAKNESS_ENDED", 10000, npc, null);
++				break;
++			}
++			
++			case "WEAKNESS_ENDED":
++			{
++				_mechanicStage.set(4);
++				_furyUsed = false;
++				
++				if (_isMechanicActive)
++				{
++					_isMechanicActive = false;
++					npc.disableCoreAI(false);
++					toggleAttackSkills(npc, true);
+ 				}
++				
++				startQuestTimer("END_FURY_WINDOW", 15000, npc, null);
++				break;
+ 			}
+-			// Death cinematic, spawn of Teleport Cubes.
+-			else if (event.equalsIgnoreCase("die_1"))
++			
++			case "END_FURY_WINDOW":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 2000, 130, -1, 0, 15000, 10000, 0, 0, 1, 1, 0));
++				_mechanicStage.set(5);
++				// BERSERK CHANCE 50%
++				if (Rnd.get(100) < 50)
++				{
++					startQuestTimer("PRE_BERSERK_PHASE", 10000, npc, null);
++				}
++				else
++				{
++					startQuestTimer("RESTART_CYCLE", 1000, npc, null);
++				}
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_2"))
++			
++			case "PRE_BERSERK_PHASE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1100, 210, -5, 3000, 15000, 10000, -13, 0, 1, 1, 0));
++				_isPreparingMechanic = true;
++				startQuestTimer("PRE_MECHANIC_CLEANSE", 7000, npc, null);
++				startQuestTimer("PREPARE_BERSERK", 10000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_3"))
++			
++			case "PREPARE_BERSERK":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1300, 200, -8, 3000, 15000, 10000, 0, 15, 1, 1, 0));
++				_mechanicStage.set(6);
++				_isMechanicActive = true;
++				_isPreparingMechanic = false;
++				npc.disableCoreAI(true);
++				toggleAttackSkills(npc, false);
++				npc.stopMove(null);
++				npc.getAI().setIntention(Intention.IDLE);
++				npc.abortCast();
++				npc.abortAttack();
++				npc.setTarget(npc);
++				
++				ThreadPool.schedule(() ->
++				{
++					if (npc.isDead())
++					{
++						return;
++					}
++					npc.setTarget(npc);
++					npc.doCast(VALAKAS_BERSERK.getSkill());
++					ThreadPool.schedule(() ->
++					{
++						BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(NpcStringId.HOW_DARE_THESE_PUNY_CREATURES_ATTACK_ME_THEY_ARE_NO_MATCH_BOTH_FOR_MY_FLAMES_AND_MY_WRATH, ExShowScreenMessage.TOP_CENTER, 5000, true));
++					}, 1000);
++				}, 2000);
++				
++				ThreadPool.schedule(() ->
++				{
++					if (npc.isDead())
++					{
++						return;
++					}
++					_isMechanicActive = false;
++					npc.disableCoreAI(false);
++					toggleAttackSkills(npc, true);
++					_mechanicStage.set(7);
++					manageSkills(npc);
++					startQuestTimer("BERSERK_COMBAT_PHASE", 3000, npc, null);
++				}, 5000);
++				
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_4"))
++			
++			case "BERSERK_COMBAT_PHASE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1000, 190, 0, 500, 15000, 10000, 0, 10, 1, 1, 0));
++				_isMechanicActive = false;
++				startQuestTimer("RESTART_CYCLE", 60000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_5"))
++			
++			case "RESTART_CYCLE":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 120, 0, 2500, 15000, 10000, 12, 40, 1, 1, 0));
++				resetMechanicState();
++				// RESTART FURY TIMER (1m 45s after mechanic ends)
++				startQuestTimer("TASK_FURY_INDIVIDUAL", 105000, npc, null);
++				
++				// WAIT FOR NEXT CYCLE (5 Min)
++				startQuestTimer("PRE_BARRIER_PHASE", 300000, npc, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_6"))
++			
++			case "challenge_message":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 20, 0, 700, 15000, 10000, 10, 10, 1, 1, 0));
++				if (GrandBossManager.getInstance().getStatus(VALAKAS) == FIGHTING)
++				{
++					final Playable target = getRandomTarget(npc);
++					if (target != null)
++					{
++						BOSS_ZONE.broadcastPacket(new ExShowScreenMessage(VALAKAS_CHALLENGE_MSG, ExShowScreenMessage.TOP_CENTER, 10000, true, target.getName()));
++					}
++				}
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_7"))
++			
++			case "check_inactivity":
+ 			{
+-				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 10, 0, 1000, 15000, 10000, 20, 70, 1, 1, 0));
++				// Inactivity 1 hour (60 minutes)
++				if ((GrandBossManager.getInstance().getStatus(VALAKAS) == FIGHTING) && ((_timeTracker + 3600000) < System.currentTimeMillis()))
++				{
++					npc.getAI().setIntention(Intention.IDLE);
++					npc.teleToLocation(VALAKAS_REGENERATION_LOC);
++					GrandBossManager.getInstance().setStatus(VALAKAS, DORMANT);
++					npc.setCurrentHpMp(npc.getMaxHp(), npc.getMaxMp());
++					BOSS_ZONE.oustAllPlayers();
++					
++					cancelQuestTimer("check_inactivity", npc, null);
++					cancelQuestTimer("manage_skills", npc, null);
++					cancelQuestTimer("METEOR_TASK", npc, null);
++					cancelQuestTimer("TASK_METEOR_UPDATED", npc, null);
++					cancelQuestTimer("TASK_FURY_INDIVIDUAL", npc, null);
++					cancelQuestTimer("CAST_FURY_INDIVIDUAL", npc, null);
++					cancelQuestTimer("PRE_FURY_INDIVIDUAL", npc, null);
++					cancelQuestTimer("MSG_FURY_INDIVIDUAL", npc, null);
++					
++					cancelQuestTimer("PRE_BARRIER_PHASE", npc, null);
++					cancelQuestTimer("PRE_MECHANIC_CLEANSE", npc, null);
++					cancelQuestTimer("CLEANSE_TASK", npc, null);
++					
++					cancelQuestTimer("START_BARRIER_SEQUENCE", npc, null);
++					cancelQuestTimer("CAST_EARTHQUAKE_CHANNEL", npc, null);
++					cancelQuestTimer("BARRIER_RESULT_CHECK", npc, null);
++					cancelQuestTimer("APPLY_WEAKNESS", npc, null);
++					cancelQuestTimer("WEAKNESS_ENDED", npc, null);
++					cancelQuestTimer("END_FURY_WINDOW", npc, null);
++					cancelQuestTimer("PRE_BERSERK_PHASE", npc, null);
++					cancelQuestTimer("PREPARE_BERSERK", npc, null);
++					cancelQuestTimer("EXECUTE_BERSERK", npc, null);
++					cancelQuestTimer("BERSERK_COMBAT_PHASE", npc, null);
++					cancelQuestTimer("RESTART_CYCLE", npc, null);
++					cancelQuestTimer("RESTART_CYCLE_FAILED", npc, null);
++					
++					resetMechanicState();
++					_cycleTriggered = false;
++				}
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("die_8"))
++			
++			case "die_1":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 2000, 130, -1, 0, 15000, 10000, 0, 0, 1, 1, 0));
++				break;
++			case "die_2":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1100, 210, -5, 3000, 15000, 10000, -13, 0, 1, 1, 0));
++				break;
++			case "die_3":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1300, 200, -8, 3000, 15000, 10000, 0, 15, 1, 1, 0));
++				break;
++			case "die_4":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1000, 190, 0, 500, 15000, 10000, 0, 10, 1, 1, 0));
++				break;
++			case "die_5":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 120, 0, 2500, 15000, 10000, 12, 40, 1, 1, 0));
++				break;
++			case "die_6":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 20, 0, 700, 15000, 10000, 10, 10, 1, 1, 0));
++				break;
++			case "die_7":
++				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 10, 0, 1000, 15000, 10000, 20, 70, 1, 1, 0));
++				break;
++			case "die_8":
+ 			{
+ 				BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1700, 10, 0, 300, 15000, 250, 20, -20, 1, 1, 0));
+-				
+ 				for (Location loc : TELEPORT_CUBE_LOCATIONS)
+ 				{
+-					addSpawn(31759, loc, false, 900000);
++					addSpawn(31759, loc, false, 60000);
+ 				}
+-				
+-				startQuestTimer("remove_players", 900000, null, null);
++				startQuestTimer("remove_players", 60000, null, null);
++				break;
+ 			}
+-			else if (event.equalsIgnoreCase("skill_task"))
++			case "valakas_unlock":
+ 			{
+-				callSkillAI(npc);
++				spawnValakas(true);
++				break;
++			}
++			case "remove_players":
++			{
++				BOSS_ZONE.oustAllPlayers();
++				break;
+ 			}
+ 		}
+-		else if (event.equalsIgnoreCase("valakas_unlock"))
+-		{
+-			_valakas = (GrandBoss) addSpawn(VALAKAS, VALAKAS_REGENERATION_LOC, false, 0);
+-			_valakas.teleToLocation(VALAKAS_HIDDEN_LOC);
+-			_valakas.setInvul(true);
+-			_valakas.setRunning();
+-			_valakas.getAI().setIntention(Intention.IDLE);
+-			GrandBossManager.getInstance().addBoss(_valakas);
+-			GrandBossManager.getInstance().setStatus(VALAKAS, DORMANT);
+-		}
+-		else if (event.equalsIgnoreCase("remove_players"))
+-		{
+-			BOSS_ZONE.oustAllPlayers();
+-		}
+-		
+ 		return super.onEvent(event, npc, player);
+ 	}
+ 	
+@@ -403,7 +797,6 @@ public class Valakas extends Script
+ 	{
+ 		npc.asAttackable().setCanReturnToSpawnPoint(false);
+ 		npc.setRandomWalking(false);
+-		// npc.disableCoreAI(true);
+ 	}
+ 	
+ 	@Override
+@@ -415,159 +808,250 @@ public class Valakas extends Script
+ 			return;
+ 		}
+ 		
+-		if (npc.isHpBlocked())
++		if (GrandBossManager.getInstance().getStatus(VALAKAS) != FIGHTING)
+ 		{
++			attacker.teleToLocation(ATTACKER_REMOVE);
+ 			return;
+ 		}
+ 		
+-		if (GrandBossManager.getInstance().getStatus(VALAKAS) != FIGHTING)
++		_timeTracker = System.currentTimeMillis();
++		
++		// CYCLE AT 75% HP
++		if ((npc.getCurrentHpPercent() < 75) && !_cycleTriggered && !_isMechanicActive && !_isPreparingMechanic)
+ 		{
+-			attacker.teleToLocation(ATTACKER_REMOVE);
+-			return;
++			_cycleTriggered = true;
++			startQuestTimer("PRE_BARRIER_PHASE", 1000, npc, null);
+ 		}
+ 		
+-		// Debuff strider-mounted players.
+-		if ((attacker.getMountType() == MountType.STRIDER) && !attacker.isAffectedBySkill(4258))
++		int stage = _mechanicStage.get();
++		if (((stage == 1) || (stage == 2)) && _isBarrierHitPhase && !_barrierBroken)
+ 		{
+-			npc.setTarget(attacker);
+-			npc.doCast(SkillData.getInstance().getSkill(4258, 1));
++			if (_barrierHits.incrementAndGet() >= BARRIER_HIT_REQUIREMENT)
++			{
++				_barrierBroken = true;
++			}
+ 		}
+ 		
+-		_timeTracker = System.currentTimeMillis();
++		if (_isMechanicActive)
++		{
++			return;
++		}
++		
++		manageSkills(npc);
+ 	}
+ 	
+ 	@Override
+ 	public void onKill(Npc npc, Player killer, boolean isSummon)
+ 	{
+-		// Cancel skill_task and regen_task.
+-		cancelQuestTimer("regen_task", npc, null);
+-		cancelQuestTimer("skill_task", npc, null);
++		cancelQuestTimer("check_inactivity", npc, null);
++		cancelQuestTimer("manage_skills", npc, null);
++		cancelQuestTimer("METEOR_TASK", npc, null);
++		cancelQuestTimer("TASK_METEOR_UPDATED", npc, null);
++		cancelQuestTimer("TASK_FURY_INDIVIDUAL", npc, null);
++		cancelQuestTimer("CAST_FURY_INDIVIDUAL", npc, null);
++		cancelQuestTimer("PRE_FURY_INDIVIDUAL", npc, null);
++		cancelQuestTimer("MSG_FURY_INDIVIDUAL", npc, null);
++		
++		cancelQuestTimer("PRE_BARRIER_PHASE", npc, null);
++		cancelQuestTimer("PRE_MECHANIC_CLEANSE", npc, null);
++		cancelQuestTimer("CLEANSE_TASK", npc, null);
++		
++		cancelQuestTimer("START_BARRIER_SEQUENCE", npc, null);
++		cancelQuestTimer("CAST_EARTHQUAKE_CHANNEL", npc, null);
++		cancelQuestTimer("BARRIER_RESULT_CHECK", npc, null);
++		cancelQuestTimer("APPLY_WEAKNESS", npc, null);
++		cancelQuestTimer("WEAKNESS_ENDED", npc, null);
++		cancelQuestTimer("END_FURY_WINDOW", npc, null);
++		cancelQuestTimer("ACTIVATE_BERSERK", npc, null);
++		cancelQuestTimer("PREPARE_BERSERK", npc, null);
++		cancelQuestTimer("EXECUTE_BERSERK", npc, null);
++		cancelQuestTimer("BERSERK_COMBAT_PHASE", npc, null);
++		cancelQuestTimer("RESTART_CYCLE", npc, null);
++		cancelQuestTimer("RESTART_CYCLE_FAILED", npc, null);
+ 		
+-		// Launch death animation.
+ 		BOSS_ZONE.broadcastPacket(new PlaySound(1, "B03_D", 0, 0, 0, 0, 0));
+ 		BOSS_ZONE.broadcastPacket(new SpecialCamera(npc, 1200, 20, -10, 0, 10000, 13000, 0, 0, 0, 0, 0));
+-		
+-		startQuestTimer("die_1", 300, npc, null); // 300
+-		startQuestTimer("die_2", 600, npc, null); // 300
+-		startQuestTimer("die_3", 3800, npc, null); // 3200
+-		startQuestTimer("die_4", 8200, npc, null); // 4400
+-		startQuestTimer("die_5", 8700, npc, null); // 500
+-		startQuestTimer("die_6", 13300, npc, null); // 4600
+-		startQuestTimer("die_7", 14000, npc, null); // 700
+-		startQuestTimer("die_8", 16500, npc, null); // 2500
++		startQuestTimer("die_1", 300, npc, null);
++		startQuestTimer("die_2", 600, npc, null);
++		startQuestTimer("die_3", 3800, npc, null);
++		startQuestTimer("die_4", 8200, npc, null);
++		startQuestTimer("die_5", 8700, npc, null);
++		startQuestTimer("die_6", 13300, npc, null);
++		startQuestTimer("die_7", 14000, npc, null);
++		startQuestTimer("die_8", 16500, npc, null);
+ 		
+ 		GrandBossManager.getInstance().setStatus(VALAKAS, DEAD);
+ 		
+-		// Calculate Min and Max respawn times randomly.
+-		final long baseIntervalMillis = GrandBossConfig.VALAKAS_SPAWN_INTERVAL * 3600000;
+-		final long randomRangeMillis = GrandBossConfig.VALAKAS_SPAWN_RANDOM * 3600000;
+-		final long respawnTime = baseIntervalMillis + getRandom(-randomRangeMillis, randomRangeMillis);
++		final long baseIntervalMillis = (long) VALAKAS_SPAWN_INTERVAL * 3600000;
++		final long randomRangeMillis = (long) VALAKAS_SPAWN_RANDOM * 3600000;
++		final long respawnTime = baseIntervalMillis + Rnd.get(-randomRangeMillis, randomRangeMillis);
+ 		startQuestTimer("valakas_unlock", respawnTime, null, null);
+ 		
+-		// also save the respawn time so that the info is maintained past reboots
+ 		final StatSet info = GrandBossManager.getInstance().getStatSet(VALAKAS);
+ 		info.set("respawn_time", System.currentTimeMillis() + respawnTime);
+ 		GrandBossManager.getInstance().setStatSet(VALAKAS, info);
+ 	}
+ 	
+-	@Override
+-	public void onSpellFinished(Npc npc, Player player, Skill skill)
++	private void cleanDebuffs(Npc npc)
+ 	{
+-		startQuestTimer("skill_task", 1000, npc, null);
+-		if (!GROUND_ZONE.isCharacterInZone(npc) && (_valakas != null))
++		if ((npc == null) || npc.isDead())
+ 		{
+-			_valakas.teleToLocation(VALAKAS_LAIR);
++			return;
++		}
++		npc.getEffectList().stopEffects(info -> info.getSkill().isDebuff(), true, true);
++	}
++	
++	private void toggleAttackSkills(Npc npc, boolean enable)
++	{
++		if (enable)
++		{
++			npc.enableSkill(VALAKAS_TRAMPLE_1.getSkill());
++			npc.enableSkill(VALAKAS_TRAMPLE_2.getSkill());
++			npc.enableSkill(VALAKAS_TAIL_RASH.getSkill());
++			npc.enableSkill(VALAKAS_TAIL_STRIKE.getSkill());
++			npc.enableSkill(VALAKAS_DRAGON_BREATH.getSkill());
++		}
++		else
++		{
++			npc.disableSkill(VALAKAS_TRAMPLE_1.getSkill(), 15000);
++			npc.disableSkill(VALAKAS_TRAMPLE_2.getSkill(), 15000);
++			npc.disableSkill(VALAKAS_TAIL_RASH.getSkill(), 15000);
++			npc.disableSkill(VALAKAS_TAIL_STRIKE.getSkill(), 15000);
++			npc.disableSkill(VALAKAS_DRAGON_BREATH.getSkill(), 15000);
+ 		}
+ 	}
+ 	
+-	private void callSkillAI(Npc npc)
++	private void manageSkills(Npc npc)
+ 	{
+-		if (npc.isInvul() || npc.isCastingNow())
++		if (npc.isCastingNow() || npc.isCoreAIDisabled() || npc.isInvul() || npc.isDead())
++		{
++			return;
++		}
++		if (_isMechanicActive || _isPreparingMechanic)
+ 		{
+ 			return;
+ 		}
+ 		
+-		// Pickup a target if no or dead victim. 10% luck he decides to reconsiders his target.
+-		if ((_actualVictim == null) || _actualVictim.isDead() || !(npc.isInSurroundingRegion(_actualVictim)) || (getRandom(10) == 0))
++		if (!GROUND_ZONE.isCharacterInZone(npc))
+ 		{
+-			_actualVictim = getRandomTarget(npc);
++			npc.teleToLocation(VALAKAS_LAIR);
++			return;
+ 		}
+ 		
+-		// If result is still null, Valakas will roam. Don't go deeper in skill AI.
+-		if (_actualVictim == null)
++		Playable target = getRandomTarget(npc);
++		if (target == null)
+ 		{
+-			if (getRandom(10) == 0)
++			return;
++		}
++		
++		Skill skillToCast = null;
++		
++		if (_isPreparingMechanic)
++		{
++			if (Rnd.get(100) < 50)
+ 			{
+-				final int x = npc.getX();
+-				final int y = npc.getY();
+-				final int z = npc.getZ();
+-				
+-				final int posX = x + getRandom(-1400, 1400);
+-				final int posY = y + getRandom(-1400, 1400);
+-				
+-				if (GeoEngine.getInstance().canMoveToTarget(x, y, z, posX, posY, z, npc.getInstanceWorld()))
++				skillToCast = VALAKAS_TRAMPLE_1.getSkill();
++			}
++			else
++			{
++				skillToCast = VALAKAS_TRAMPLE_2.getSkill();
++			}
++			
++			if ((skillToCast != null) && !npc.isSkillDisabled(skillToCast))
++			{
++				if (LocationUtil.checkIfInRange(skillToCast.getCastRange(), npc, target, true))
+ 				{
+-					npc.getAI().setIntention(Intention.MOVE_TO, new Location(posX, posY, z, 0));
++					npc.setTarget(target);
++					npc.doCast(skillToCast);
++				}
++				else
++				{
++					npc.getAI().setIntention(Intention.FOLLOW, target, null);
+ 				}
+ 			}
+ 			return;
+ 		}
+ 		
+-		final Skill skill = getRandomSkill(npc).getSkill();
+-		
+-		// Cast the skill or follow the target.
+-		if (LocationUtil.checkIfInRange((skill.getCastRange() < 600) ? 600 : skill.getCastRange(), npc, _actualVictim, true))
++		// Inhale Logic
++		long currentTime = System.currentTimeMillis();
++		if (currentTime > _inhaleNextTime)
+ 		{
+-			npc.getAI().setIntention(Intention.IDLE);
+-			npc.setTarget(_actualVictim);
+-			npc.doCast(skill);
++			if (_mechanicStage.get() == 3)
++			{
++				return;
++			}
++			
++			npc.setTarget(npc);
++			npc.doCast(VALAKAS_INHALE.getSkill());
++			_inhaleBurstCount++;
++			if (_inhaleBurstCount >= 3)
++			{
++				_inhaleNextTime = currentTime + 180000;
++				_inhaleBurstCount = 0;
++			}
++			else
++			{
++				_inhaleNextTime = currentTime + 10000;
++			}
++			return;
+ 		}
+-		else
++		
++		// Fury Logic
++		if ((_mechanicStage.get() == 4) && !_furyUsed)
+ 		{
+-			npc.getAI().setIntention(Intention.FOLLOW, _actualVictim, null);
++			if (Rnd.get(100) < FURY_CHANCE)
++			{
++				_furyUsed = true;
++				npc.setTarget(npc);
++				npc.doCast(VALAKAS_FURY.getSkill());
++				return;
++			}
+ 		}
+-	}
+-	
+-	/**
+-	 * Pick a random skill.<br>
+-	 * Valakas will mostly use utility skills. If Valakas feels surrounded, he will use AoE skills.<br>
+-	 * Lower than 50% HPs, he will begin to use Meteor skill.
+-	 * @param npc valakas
+-	 * @return a skill holder
+-	 */
+-	private SkillHolder getRandomSkill(Npc npc)
+-	{
+-		final int hpRatio = (int) ((npc.getCurrentHp() / npc.getMaxHp()) * 100);
+ 		
+-		// Valakas Lava Skin has priority.
+-		if ((hpRatio < 75) && (getRandom(150) == 0) && !npc.isAffectedBySkill(VALAKAS_LAVA_SKIN.getSkillId()))
++		int chance = Rnd.get(100);
++		if (chance < 20)
+ 		{
+-			return VALAKAS_LAVA_SKIN;
++			skillToCast = VALAKAS_DRAGON_BREATH.getSkill();
+ 		}
+-		
+-		// Valakas will use mass spells if he feels surrounded.
+-		if (World.getInstance().getVisibleObjectsInRange(npc, Player.class, 1200).size() >= 20)
++		else if (chance < 40)
+ 		{
+-			return getRandomEntry(VALAKAS_AOE_SKILLS);
++			skillToCast = VALAKAS_TAIL_STRIKE.getSkill();
+ 		}
+-		
+-		if (hpRatio > 50)
++		else if (chance < 60)
++		{
++			skillToCast = VALAKAS_TRAMPLE_2.getSkill();
++		}
++		else if (chance < 80)
++		{
++			skillToCast = VALAKAS_TRAMPLE_1.getSkill();
++		}
++		else
+ 		{
+-			return getRandomEntry(VALAKAS_REGULAR_SKILLS);
++			skillToCast = VALAKAS_TAIL_RASH.getSkill();
+ 		}
+ 		
+-		return getRandomEntry(VALAKAS_LOWHP_SKILLS);
++		if (skillToCast != null)
++		{
++			if (npc.isSkillDisabled(skillToCast))
++			{
++				return;
++			}
++			
++			if (LocationUtil.checkIfInRange((skillToCast.getCastRange() < 600) ? 600 : skillToCast.getCastRange(), npc, target, true))
++			{
++				npc.setTarget(target);
++				npc.doCast(skillToCast);
++			}
++			else
++			{
++				npc.getAI().setIntention(Intention.FOLLOW, target, null);
++			}
++		}
+ 	}
+ 	
+-	/**
+-	 * Pickup a random Playable from the zone, deads targets aren't included.
+-	 * @param npc
+-	 * @return a random Playable.
+-	 */
+ 	private Playable getRandomTarget(Npc npc)
+ 	{
+ 		final List<Playable> result = new ArrayList<>();
+-		
+ 		World.getInstance().forEachVisibleObject(npc, Playable.class, obj ->
+ 		{
+ 			if ((obj != null) && !obj.isDead() && !obj.isInvisible() && !obj.isPet() && obj.isPlayable())
+@@ -575,12 +1059,83 @@ public class Valakas extends Script
+ 				result.add(obj);
+ 			}
+ 		});
++		return result.isEmpty() ? null : result.get(Rnd.get(result.size()));
++	}
++	
++	// Meteor lateral Logic
++	private void spawnLateralMeteors(Npc npc)
++	{
++		final int z = npc.getZ();
++		final double angle = LocationUtil.convertHeadingToDegree(npc.getHeading());
++		final double angleLeft = Math.toRadians(angle + 90);
++		final double angleRight = Math.toRadians(angle - 90);
+ 		
+-		return getRandomEntry(result);
++		for (int i = 0; i < 4; i++)
++		{
++			
++			double targetAngle = (i < 2) ? angleLeft : angleRight;
++			
++			targetAngle += Math.toRadians(Rnd.get(-40, 40));
++			
++			int dist = ((i % 2) == 0) ? 800 : 1600;
++			
++			int x = (int) (npc.getX() + (dist * Math.cos(targetAngle)));
++			int y = (int) (npc.getY() + (dist * Math.sin(targetAngle)));
++			
++			Location spawnLoc = new Location(x, y, z);
++			if (!BOSS_ZONE.isInsideZone(spawnLoc))
++			{
++				continue;
++			}
++			
++			final Npc meteorTrap = addSpawn(INVISIBLE_NPC, spawnLoc, false, 5000);
++			if (meteorTrap != null)
++			{
++				meteorTrap.setTarget(meteorTrap);
++				meteorTrap.doCast(VALAKAS_METEOR_STORM.getSkill());
++			}
++		}
++	}
++	
++	// Meteor Logic
++	private void spawnMeteors(Npc npc)
++	{
++		final int radius = 2500;
++		final int z = npc.getZ();
++		
++		for (int i = 0; i < 8; i++)
++		{
++			int x = npc.getX() + Rnd.get(-radius, radius);
++			int y = npc.getY() + Rnd.get(-radius, radius);
++			Location spawnLoc = new Location(x, y, z);
++			
++			if (!BOSS_ZONE.isInsideZone(spawnLoc))
++			{
++				continue;
++			}
++			
++			final Npc meteorTrap = addSpawn(INVISIBLE_NPC, spawnLoc, false, 5000);
++			if (meteorTrap != null)
++			{
++				meteorTrap.setTarget(meteorTrap);
++				meteorTrap.doCast(VALAKAS_METEOR_STORM.getSkill());
++			}
++		}
++	}
++	
++	private void resetMechanicState()
++	{
++		_mechanicStage.set(0);
++		_isBarrierHitPhase = false;
++		_barrierHits.set(0);
++		_barrierBroken = false;
++		_furyUsed = false;
++		_isMechanicActive = false;
++		_isPreparingMechanic = false;
+ 	}
+ 	
+ 	public static void main(String[] args)
+ 	{
+ 		new Valakas();
+ 	}
+-}
++}
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/bosses/Valakas/ValakasLootManager.java dist/game/data/scripts/ai/bosses/Valakas/ValakasLootManager.java
+new file mode 100644
+index 00000000000..eba3c04b3ec
+--- /dev/null
++++ dist/game/data/scripts/ai/bosses/Valakas/ValakasLootManager.java
+@@ -0,0 +1,300 @@
++/*
++ * Copyright (c) 2013 L2jMobius
++ * 
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ * 
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ * 
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
++ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++package ai.bosses.Valakas;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.logging.Logger;
++
++import org.l2jmobius.commons.util.Rnd;
++import org.l2jmobius.gameserver.data.xml.NpcData;
++import org.l2jmobius.gameserver.model.World;
++import org.l2jmobius.gameserver.model.actor.Npc;
++import org.l2jmobius.gameserver.model.actor.Player;
++import org.l2jmobius.gameserver.model.actor.holders.npc.DropGroupHolder;
++import org.l2jmobius.gameserver.model.actor.holders.npc.DropHolder;
++import org.l2jmobius.gameserver.model.actor.templates.NpcTemplate;
++import org.l2jmobius.gameserver.model.groups.CommandChannel;
++import org.l2jmobius.gameserver.model.groups.Party;
++import org.l2jmobius.gameserver.model.item.enums.ItemProcessType;
++import org.l2jmobius.gameserver.model.script.Script;
++import org.l2jmobius.gameserver.network.NpcStringId;
++import org.l2jmobius.gameserver.network.serverpackets.ExShowScreenMessage;
++
++/**
++ * Valakas Loot Manager AI System: Auto-Loot Rule: Command Channel (CC)
++ * @author Notorion
++ */
++public class ValakasLootManager extends Script
++{
++	private static final Logger LOGGER = Logger.getLogger(ValakasLootManager.class.getName());
++	
++	private static final int VALAKAS_ID = 29415;
++	
++	// CONFIGURATION: Minimum number of players in the CC required to be eligible for the drop,
++	// 30 is a safety margin
++	private static final int MIN_CC_MEMBERS = 30;
++	
++	private static final List<DropGroupHolder> _storedDrops = new ArrayList<>();
++	private static boolean _dropsLoaded = false;
++	
++	private final Map<Integer, Long> _damageMap = new ConcurrentHashMap<>();
++	
++	public ValakasLootManager()
++	{
++		addAttackId(VALAKAS_ID);
++		addKillId(VALAKAS_ID);
++		addSpawnId(VALAKAS_ID);
++		
++		loadAndHijackDrops();
++		scanForExistingValakas();
++		LOGGER.info("ValakasLootManager: Loaded. Target: " + VALAKAS_ID);
++	}
++	
++	private void scanForExistingValakas()
++	{
++		for (org.l2jmobius.gameserver.model.WorldObject obj : World.getInstance().getVisibleObjects())
++		{
++			if ((obj != null) && obj.isNpc() && (obj.getId() == VALAKAS_ID) && !((Npc) obj).isDead())
++			{
++				loadAndHijackDrops();
++				return;
++			}
++		}
++	}
++	
++	@Override
++	public void onSpawn(Npc npc)
++	{
++		loadAndHijackDrops();
++		_damageMap.clear();
++	}
++	
++	private void loadAndHijackDrops()
++	{
++		if (_dropsLoaded && !_storedDrops.isEmpty())
++		{
++			return;
++		}
++		
++		NpcTemplate template = NpcData.getInstance().getTemplate(VALAKAS_ID);
++		
++		if (template == null)
++		{
++			LOGGER.warning("ValakasLootManager: Template " + VALAKAS_ID + " not found.");
++			return;
++		}
++		
++		List<DropGroupHolder> originalDrops = template.getDropGroups();
++		if ((originalDrops != null) && !originalDrops.isEmpty())
++		{
++			synchronized (_storedDrops)
++			{
++				_storedDrops.clear();
++				_storedDrops.addAll(originalDrops);
++				_dropsLoaded = true;
++			}
++			// Drop removed from XML so the server does not drop it on the ground
++			template.removeDropGroups();
++			LOGGER.info("ValakasLootManager: Drops successfully captured.");
++		}
++	}
++	
++	@Override
++	public void onAttack(Npc npc, Player attacker, int damage, boolean isSummon)
++	{
++		if (attacker == null)
++		{
++			return;
++		}
++		_damageMap.merge(attacker.getObjectId(), (long) damage, Long::sum);
++	}
++	
++	@Override
++	public void onKill(Npc npc, Player killer, boolean isSummon)
++	{
++		if (_damageMap.isEmpty())
++		{
++			return;
++		}
++		
++		// 1. Get Damage Ranking (Top -> Bottom)
++		List<Player> ranking = calculateRanking();
++		
++		Player validWinner = null;
++		
++		// 2. Command Channel (CC) Filter
++		for (Player candidate : ranking)
++		{
++			Party party = candidate.getParty();
++			
++			// Check if there is a Party and if there is a Command Channel
++			if ((party != null) && (party.getCommandChannel() != null))
++			{
++				CommandChannel cc = party.getCommandChannel();
++				
++				// Check Minimum Size of the CC
++				if (cc.getMemberCount() >= MIN_CC_MEMBERS)
++				{
++					validWinner = candidate; // Valid Winner
++					break;
++				}
++				
++				// LOGGER.info("Leader's CC " + candidate.getName() + " ignored. Members: " + cc.getMemberCount() + " (Minimum: " + MIN_CC_MEMBERS + ")");
++			}
++		}
++		
++		if (validWinner != null)
++		{
++			CommandChannel cc = validWinner.getParty().getCommandChannel();
++			Player ccLeader = cc.getLeader(); // The drop always goes to the CC Leader
++			
++			LOGGER.info("Valakas auto-loot: " + ccLeader.getName() + " (Membros: " + cc.getMemberCount() + ")");
++			
++			// 3. Official Message on Screen
++			sendScreenMessage(npc, ccLeader.getName());
++			
++			// 4. Assign items directly to the Command Channel (CC) Leader's inventory
++			giveAutoLootDrops(npc, ccLeader);
++		}
++		else
++		{
++			// LOGGER.info("No valid Command Channel (CC) with " + MIN_CC_MEMBERS + "+ members inflicted sufficient damage.");
++		}
++		
++		_damageMap.clear();
++	}
++	
++	private void sendScreenMessage(Npc npc, String winnerName)
++	{
++		// Message: "# $s1's Command Channel has looting rights."
++		ExShowScreenMessage screenMsg = new ExShowScreenMessage(NpcStringId.S1_S_COMMAND_CHANNEL_HAS_LOOTING_RIGHTS, ExShowScreenMessage.TOP_CENTER, 10000, true, winnerName);
++		
++		// Broadcast message to all players who inflicted damage
++		for (Integer playerId : _damageMap.keySet())
++		{
++			Player p = World.getInstance().getPlayer(playerId);
++			if ((p != null) && p.isOnline())
++			{
++				p.sendPacket(screenMsg);
++			}
++		}
++		
++		// Broadcast to nearby spectators
++		if (npc != null)
++		{
++			World.getInstance().forEachVisibleObject(npc, Player.class, p ->
++			{
++				if (!_damageMap.containsKey(p.getObjectId()))
++				{
++					p.sendPacket(screenMsg);
++				}
++			});
++		}
++	}
++	
++	private void giveAutoLootDrops(Npc npc, Player owner)
++	{
++		if (_storedDrops.isEmpty())
++		{
++			return;
++		}
++		
++		int totalGiven = 0;
++		for (DropGroupHolder group : _storedDrops)
++		{
++			// Probability of drop assigned to the group
++			if ((group.getChance() > 0) && (Rnd.get(100.0) > group.getChance()))
++			{
++				continue;
++			}
++			
++			for (DropHolder drop : group.getDropList())
++			{
++				// Probability of item drop
++				if (Rnd.get(100.0) < drop.getChance())
++				{
++					long count = Rnd.get(drop.getMin(), drop.getMax());
++					
++					// Assign directly to player’s inventory
++					owner.addItem(ItemProcessType.LOOT, drop.getItemId(), count, npc, true);
++					totalGiven++;
++				}
++			}
++		}
++		LOGGER.info("Items successfully assigned to Command Channel (CC) Leader (" + owner.getName() + "): " + totalGiven);
++	}
++	
++	private List<Player> calculateRanking()
++	{
++		Map<Integer, Long> groupDamage = new ConcurrentHashMap<>();
++		Map<Integer, Player> leaderObjects = new ConcurrentHashMap<>();
++		
++		// Aggregate damage per unit, defined by Party Leader
++		for (Map.Entry<Integer, Long> entry : _damageMap.entrySet())
++		{
++			Player player = World.getInstance().getPlayer(entry.getKey());
++			if ((player == null) || !player.isOnline())
++			{
++				continue;
++			}
++			
++			Player leader = getUltimateLeader(player);
++			
++			groupDamage.merge(leader.getObjectId(), entry.getValue(), Long::sum);
++			leaderObjects.putIfAbsent(leader.getObjectId(), leader);
++		}
++		
++		if (groupDamage.isEmpty())
++		{
++			return new ArrayList<>();
++		}
++		
++		List<Map.Entry<Integer, Long>> sortedGroups = new ArrayList<>(groupDamage.entrySet());
++		sortedGroups.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
++		
++		List<Player> rankedLeaders = new ArrayList<>();
++		for (Map.Entry<Integer, Long> entry : sortedGroups)
++		{
++			rankedLeaders.add(leaderObjects.get(entry.getKey()));
++		}
++		
++		return rankedLeaders;
++	}
++	
++	private Player getUltimateLeader(Player player)
++	{
++		// Retrieve Party Leader to aggregate damage
++		Party party = player.getParty();
++		if (party != null)
++		{
++			return party.getLeader();
++		}
++		return player;
++	}
++	
++	public static void main(String[] args)
++	{
++		new ValakasLootManager();
++	}
++}
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/TersisHerald/TersisHerald.java dist/game/data/scripts/ai/others/TersisHerald/TersisHerald.java
+index 6c76ded8ad9..59f31bfd6ae 100644
+--- dist/game/data/scripts/ai/others/TersisHerald/TersisHerald.java
++++ dist/game/data/scripts/ai/others/TersisHerald/TersisHerald.java
+@@ -38,7 +38,7 @@ public class TersisHerald extends Script
+ 	// NPCs
+ 	private static final int HERALD = 4326; // Tersi's Herald
+ 	private static final int ANTHARAS = 29068;
+-	private static final int VALAKAS = 29028;
++	private static final int VALAKAS = 29415; // Valakas Lv.130
+ 	private static final int LINDVIOR = 29240;
+ 	
+ 	// Skills
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31385-01.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31385-01.htm
+index 91a1c628303..dd183da88be 100644
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31385-01.htm
++++ dist/game/data/scripts/ai/others/ValakasTeleporters/31385-01.htm
+@@ -1,3 +1,6 @@
+-<html><body>[Whispering]<br>
+-<font color="LEVEL">You can't confront Valakas yet. Away with you!</font>
++<html><body>Heart of Volcano:<br>
++(A great voice thunders inside your head.)<br>
++<font color="LEVEL">So few...<br>
++Shilen's wrath will not be satisfied with so few...</font><br>
++(A command channel needs at least 49 members to challenge Valakas.)
+ </body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31385-02.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31385-02.htm
+index 0d8341e3910..9691cb91aa6 100644
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31385-02.htm
++++ dist/game/data/scripts/ai/others/ValakasTeleporters/31385-02.htm
+@@ -1,3 +1,6 @@
+-<html><body>[Whispering]<br>
+-<font color="LEVEL">The nest is full, you must wait.</font>
++<html><body>Heart of Volcano:<br>
++(A great voice thunders inside your head.)<br>
++<font color="LEVEL">Do not expect superior beings to cater to you.<br>
++When the time is right, you will also face Shilen's wrath.</font><br>
++(Valakas is currently in battle.)
+ </body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31385-03.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31385-03.htm
+index 4a17e95d29c..bb961997b17 100644
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31385-03.htm
++++ dist/game/data/scripts/ai/others/ValakasTeleporters/31385-03.htm
+@@ -1,3 +1,4 @@
+-<html><body>[Whispering]<br>
+-<font color="LEVEL">Too many have entered, I can't let you go in.</font>
++<html><body>Heart of Volcano:<br>
++<font color="LEVEL">The maximum number of 200 challengers has already been reached.</font><br>
++(Only 200 players can be inside the lair at the same time.)
+ </body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31385-04.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31385-04.htm
+index 7ddf05d4ad7..04bb2b27291 100644
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31385-04.htm
++++ dist/game/data/scripts/ai/others/ValakasTeleporters/31385-04.htm
+@@ -1,3 +1,6 @@
+-<html><body>[Whispering]<br>
+-You cannot enter.
++<html><body>Heart of Volcano:<br>
++(A great voice thunders inside your head.)<br>
++<font color="LEVEL">Shilen's wrath will not subside while false idols roam free.<br>
++Leave, and prepare to face the return of Valakas.</font><br>
++(You cannot challenge Valakas at this time.)
+ </body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-01.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-01.htm
+deleted file mode 100644
+index 0a2c4d42cb5..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-01.htm
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-Until now, less than 50 people have attempted the Hall of Flames. Are you sure you want to enter it?<br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h Quest ValakasTeleporters 31540">Enter</Button>
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-02.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-02.htm
+deleted file mode 100644
+index 468579a0082..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-02.htm
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-So far, between 50 and 100 people have entered the Hall of Flames. Do you wish to enter?<br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h Quest ValakasTeleporters 31540">Enter</Button>
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-03.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-03.htm
+deleted file mode 100644
+index 233e707968b..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-03.htm
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-So far, between 100 and 150 people have entered the Hall of Flames. Do you wish to enter?<br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h Quest ValakasTeleporters 31540">Enter</Button>
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-04.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-04.htm
+deleted file mode 100644
+index c91f77e5c7d..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-04.htm
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-So far, between 150 and 200 people have entered the Hall of Flames. Do you wish to enter?<br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h Quest ValakasTeleporters 31540">Enter</Button>
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-05.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-05.htm
+deleted file mode 100644
+index fbe6f5cbe50..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-05.htm
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-So far, over 200 people have entered the Hall of Flames. Do you wish to enter?<br>
+-<Button ALIGN=LEFT ICON="NORMAL" action="bypass -h Quest ValakasTeleporters 31540">Enter</Button>
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/31540-06.htm dist/game/data/scripts/ai/others/ValakasTeleporters/31540-06.htm
+deleted file mode 100644
+index 0d2442fdafb..00000000000
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/31540-06.htm
++++ /dev/null
+@@ -1,3 +0,0 @@
+-<html><body>Watcher of Valakas Klein:<br>
+-In order to enter the Hall of Flames, you'll need a Floating Stone. To obtain one, you must do a small favor for me. Agreed?
+-</body></html>
+\ No newline at end of file
+diff --git dist/game/data/scripts/ai/others/ValakasTeleporters/ValakasTeleporters.java dist/game/data/scripts/ai/others/ValakasTeleporters/ValakasTeleporters.java
+index 452eaf9ae9f..19c0a884bbe 100644
+--- dist/game/data/scripts/ai/others/ValakasTeleporters/ValakasTeleporters.java
++++ dist/game/data/scripts/ai/others/ValakasTeleporters/ValakasTeleporters.java
+@@ -1,193 +1,223 @@
+ /*
+- * This file is part of the L2J Mobius project.
++ * Copyright (c) 2013 L2jMobius
+  * 
+- * This program is free software: you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation, either version 3 of the License, or
+- * (at your option) any later version.
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
+  * 
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+- * General Public License for more details.
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
+  * 
+- * You should have received a copy of the GNU General Public License
+- * along with this program. If not, see <http://www.gnu.org/licenses/>.
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
++ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+ package ai.others.ValakasTeleporters;
+ 
+-import org.l2jmobius.gameserver.config.GrandBossConfig;
+-import org.l2jmobius.gameserver.data.xml.DoorData;
+ import org.l2jmobius.gameserver.managers.GrandBossManager;
+ import org.l2jmobius.gameserver.managers.ScriptManager;
++import org.l2jmobius.gameserver.managers.ZoneManager;
+ import org.l2jmobius.gameserver.model.Location;
+ import org.l2jmobius.gameserver.model.actor.Npc;
+ import org.l2jmobius.gameserver.model.actor.Player;
+ import org.l2jmobius.gameserver.model.actor.instance.GrandBoss;
+-import org.l2jmobius.gameserver.model.script.Quest;
+-import org.l2jmobius.gameserver.model.script.QuestState;
++import org.l2jmobius.gameserver.model.groups.CommandChannel;
+ import org.l2jmobius.gameserver.model.script.Script;
++import org.l2jmobius.gameserver.model.zone.ZoneType;
++import org.l2jmobius.gameserver.network.NpcStringId;
++import org.l2jmobius.gameserver.network.serverpackets.ExShowScreenMessage;
+ 
+ import ai.bosses.Valakas.Valakas;
+ 
+ /**
+- * Grand Bosses teleport AI.<br>
+- * Original python script by Emperorc.
+- * @author Plim
++ * Valakas Teleporters AI - version 2023 <br>
++ * - Boromir: Direct Teleport to Hall. <br>
++ * - Heart: CC Entry Only with strict checks.
++ * @author Notorion
+  */
+ public class ValakasTeleporters extends Script
+ {
+ 	// NPCs
+-	private static final int[] NPCs =
+-	{
+-		31384, // Gatekeeper of Fire Dragon : Opening some doors
+-		31385, // Heart of Volcano : Teleport into Lair of Valakas
+-		31540, // Watcher of Valakas Klein : Teleport into Hall of Flames
+-		31686, // Gatekeeper of Fire Dragon : Opens doors to Heart of Volcano
+-		31687, // Gatekeeper of Fire Dragon : Opens doors to Heart of Volcano
+-		31759, // Teleportation Cubic : Teleport out of Lair of Valakas
+-	};
++	private static final int BOROMIR = 34745;
++	private static final int HEART_OF_VOLCANO = 31385;
++	private static final int TELEPORT_CUBIC = 31759;
++	private static final int VALAKAS_ID = 29415;
+ 	
+-	// Items
+-	private static final int VACUALITE_FLOATING_STONE = 7267;
+-	private static final Location ENTER_HALL_OF_FLAMES = new Location(183813, -115157, -3303);
+-	private static final Location TELEPORT_INTO_VALAKAS_LAIR = new Location(204328, -111874, 70);
++	// Locations
++	private static final Location ENTER_HALL_OF_FLAMES = new Location(190400, -107501, -1016);
++	private static final Location TELEPORT_INTO_VALAKAS_LAIR = new Location(210604, -114980, -1662);
+ 	private static final Location TELEPORT_OUT_OF_VALAKAS_LAIR = new Location(150037, -57720, -2976);
+ 	
+-	private static int playerCount = 0;
++	// Configs
++	private static final int MIN_CC_MEMBERS = 49; // 49 players
++	private static final int MAX_GLOBAL_PLAYERS = 200;
++	private static final int CHECK_RADIUS = 2500;
++	private static final int MIN_LEVEL = 120;
++	private static final int VALAKAS_WAIT_TIME = 10; // 20min
++	private static final int VALAKAS_ZONE_ID = 12010;
++	
++	private static final Object ENTRY_LOCK = new Object();
+ 	
+ 	private ValakasTeleporters()
+ 	{
+-		addStartNpc(NPCs);
+-		addTalkId(NPCs);
++		addStartNpc(BOROMIR, HEART_OF_VOLCANO, TELEPORT_CUBIC);
++		addTalkId(BOROMIR, HEART_OF_VOLCANO, TELEPORT_CUBIC);
+ 	}
+ 	
+ 	@Override
+ 	public String onEvent(String event, Npc npc, Player player)
+ 	{
+-		String htmltext = "";
+-		final QuestState qs = getQuestState(player, false);
+-		if (hasQuestItems(player, VACUALITE_FLOATING_STONE))
++		if (event.equalsIgnoreCase("teleport_hall"))
+ 		{
+ 			player.teleToLocation(ENTER_HALL_OF_FLAMES);
+-			qs.set("allowEnter", "1");
+-		}
+-		else
+-		{
+-			htmltext = "31540-06.htm";
++			return null;
+ 		}
+-		
+-		return htmltext;
+-	}
+-	
+-	@Override
+-	public String onTalk(Npc npc, Player player)
+-	{
+-		String htmltext = "";
+-		final QuestState qs = getQuestState(player, true);
+-		
+-		switch (npc.getId())
++		else if (event.equalsIgnoreCase("teleport_lair"))
+ 		{
+-			case 31385:
++			synchronized (ENTRY_LOCK)
+ 			{
+-				if (valakasAI() != null)
++				final int status = GrandBossManager.getInstance().getStatus(VALAKAS_ID);
++				
++				// 1. Boss Status Check
++				if (status == 2) // In battle
+ 				{
+-					final int status = GrandBossManager.getInstance().getStatus(29028);
+-					if ((status == 0) || (status == 1))
+-					{
+-						if (playerCount >= 200)
+-						{
+-							htmltext = "31385-03.htm";
+-						}
+-						else if (qs.getInt("allowEnter") == 1)
+-						{
+-							qs.unset("allowEnter");
+-							player.teleToLocation(TELEPORT_INTO_VALAKAS_LAIR.getX() + getRandom(600), TELEPORT_INTO_VALAKAS_LAIR.getY() + getRandom(600), TELEPORT_INTO_VALAKAS_LAIR.getZ());
+-							playerCount++;
+-							
+-							if (status == 0)
+-							{
+-								final GrandBoss valakas = GrandBossManager.getInstance().getBoss(29028);
+-								valakasAI().startQuestTimer("beginning", GrandBossConfig.VALAKAS_WAIT_TIME * 60000, valakas, null);
+-								GrandBossManager.getInstance().setStatus(29028, 1);
+-							}
+-						}
+-						else
+-						{
+-							htmltext = "31385-04.htm";
+-						}
+-					}
+-					else if (status == 2)
++					return "31385-02.htm";
++				}
++				if (status >= 3) // Dead / Cooldown
++				{
++					return "31385-04.htm";
++				}
++				
++				// 2. Command Channel Check
++				final CommandChannel cc = player.getCommandChannel();
++				if ((cc == null) || (cc.getMemberCount() < MIN_CC_MEMBERS))
++				{
++					playSound(player, "ItemSound3.sys_impossible");
++					return "31385-01.htm";
++				}
++				
++				// Only the CC leader can request entry
++				if (!cc.getLeader().equals(player))
++				{
++					playSound(player, "ItemSound3.sys_impossible");
++					player.sendMessage("Only the Command Channel Leader can attempt entry.");
++					return null;
++				}
++				
++				// 3. Dynamic Player Count (Fix ZoneManager)
++				int playersInside = 0;
++				final ZoneType zone = ZoneManager.getInstance().getZoneById(VALAKAS_ZONE_ID);
++				if (zone != null)
++				{
++					playersInside = zone.getPlayersInside().size();
++				}
++				
++				// Check global limit of 200
++				if ((playersInside + cc.getMemberCount()) > MAX_GLOBAL_PLAYERS)
++				{
++					playSound(player, "ItemSound3.sys_impossible");
++					return "31385-03.htm";
++				}
++				
++				// 4. Verification
++				for (Player member : cc.getMembers())
++				{
++					if ((member == null) || !member.isOnline())
+ 					{
+-						htmltext = "31385-02.htm";
++						continue;
+ 					}
+-					else
++					
++					if (!member.isInsideRadius3D(npc, CHECK_RADIUS) || (member.getLevel() < MIN_LEVEL))
+ 					{
+-						htmltext = "31385-01.htm";
++						playSound(player, "ItemSound3.sys_impossible");
++						player.sendMessage("Entry failed. The member " + member.getName() + " is too far away or below level " + MIN_LEVEL + ".");
++						return null;
+ 					}
+ 				}
+-				else
++				
++				if (cc.getMemberCount() < MIN_CC_MEMBERS)
+ 				{
+-					htmltext = "31385-01.htm";
++					playSound(player, "ItemSound3.sys_impossible");
++					return "31385-01.htm";
+ 				}
+-				break;
+-			}
+-			case 31384:
+-			{
+-				DoorData.getInstance().getDoor(25140004).openMe();
+-				break;
+-			}
+-			case 31686:
+-			{
+-				DoorData.getInstance().getDoor(25140005).openMe();
+-				break;
+-			}
+-			case 31687:
+-			{
+-				DoorData.getInstance().getDoor(25140006).openMe();
+-				break;
+-			}
+-			case 31540:
+-			{
+-				if (playerCount < 50)
++				
++				// 5. Start Spawn if first entry
++				if (status == 0)
+ 				{
+-					htmltext = "31540-01.htm";
++					GrandBossManager.getInstance().setStatus(VALAKAS_ID, 1);
++					
++					final ExShowScreenMessage screenMsg = new ExShowScreenMessage(NpcStringId.WHO_DARES_CHALLENGE_VALAKAS_FOOLISH_FANCIES_I_M_UNBEATABLE, ExShowScreenMessage.TOP_CENTER, 7000);
++					
++					npc.broadcastPacket(screenMsg);
++					
++					for (Player member : cc.getMembers())
++					{
++						if (member != null)
++						{
++							member.sendPacket(screenMsg);
++						}
++					}
++					
++					final Script valakasAi = (Script) ScriptManager.getInstance().getScript(Valakas.class.getSimpleName());
++					if (valakasAi != null)
++					{
++						final GrandBoss valakasBoss = GrandBossManager.getInstance().getBoss(VALAKAS_ID);
++						valakasAi.startQuestTimer("beginning", VALAKAS_WAIT_TIME * 60000, valakasBoss, null);
++					}
+ 				}
+-				else if (playerCount < 100)
++				
++				// 6. Teleport CC members
++				for (Player member : cc.getMembers())
+ 				{
+-					htmltext = "31540-02.htm";
++					if ((member != null) && member.isOnline())
++					{
++						member.teleToLocation(TELEPORT_INTO_VALAKAS_LAIR, true);
++					}
+ 				}
+-				else if (playerCount < 150)
++			}
++			return null;
++		}
++		return null;
++	}
++	
++	@Override
++	public String onTalk(Npc npc, Player player)
++	{
++		switch (npc.getId())
++		{
++			case BOROMIR:
++				return "34745.htm";
++			
++			case HEART_OF_VOLCANO:
++				final int status = GrandBossManager.getInstance().getStatus(VALAKAS_ID);
++				if ((status == 0) || (status == 1))
+ 				{
+-					htmltext = "31540-03.htm";
++					return "31385.htm";
+ 				}
+-				else if (playerCount < 200)
++				else if (status == 2)
+ 				{
+-					htmltext = "31540-04.htm";
++					return "31385-02.htm";
+ 				}
+ 				else
+ 				{
+-					htmltext = "31540-05.htm";
++					return "31385-04.htm";
+ 				}
+-				break;
+-			}
+-			case 31759:
+-			{
+-				player.teleToLocation(TELEPORT_OUT_OF_VALAKAS_LAIR.getX() + getRandom(500), TELEPORT_OUT_OF_VALAKAS_LAIR.getY() + getRandom(500), TELEPORT_OUT_OF_VALAKAS_LAIR.getZ());
+-				break;
+-			}
++				
++			case TELEPORT_CUBIC:
++				player.teleToLocation(TELEPORT_OUT_OF_VALAKAS_LAIR, true);
++				return null;
+ 		}
+-		
+-		return htmltext;
+-	}
+-	
+-	private Quest valakasAI()
+-	{
+-		return ScriptManager.getInstance().getScript(Valakas.class.getSimpleName());
++		return super.onTalk(npc, player);
+ 	}
+ 	
+ 	public static void main(String[] args)
+ 	{
+ 		new ValakasTeleporters();
+ 	}
+-}
++}
+\ No newline at end of file
+diff --git dist/game/data/scripts/handlers/admincommandhandlers/AdminGrandBoss.java dist/game/data/scripts/handlers/admincommandhandlers/AdminGrandBoss.java
+index fda1347b476..e0fa6d0bc34 100644
+--- dist/game/data/scripts/handlers/admincommandhandlers/AdminGrandBoss.java
++++ dist/game/data/scripts/handlers/admincommandhandlers/AdminGrandBoss.java
+@@ -82,7 +82,7 @@ public class AdminGrandBoss implements IAdminCommandHandler
+ 	private static final int TRASKEN = 29197; // Trasken
+ 	private static final int TRASKEN_ZONE = 12108; // Trasken Nest
+ 	
+-	private static final int VALAKAS = 29028; // Valakas
++	private static final int VALAKAS = 29415; // Valakas
+ 	private static final int VALAKAS_ZONE = 12010; // Valakas Nest
+ 	
+ 	private static final String[] ADMIN_COMMANDS =
+diff --git dist/game/data/spawns/Goddard/ForgeOfGods.xml dist/game/data/spawns/Goddard/ForgeOfGods.xml
+index 62bb5c39e22..5ba889aa671 100644
+--- dist/game/data/spawns/Goddard/ForgeOfGods.xml
++++ dist/game/data/spawns/Goddard/ForgeOfGods.xml
+@@ -3,12 +3,11 @@
+ 	<spawn name="ForgeOfGods">
+ 		<group>
+ 			<npc id="32645" x="176348" y="-116266" z="-3784" heading="23736" respawnTime="60sec" /> <!-- Chandra - Transport Post -->
+-			<npc id="31540" x="183664" y="-114944" z="-3336" heading="20000" respawnTime="60sec" /> <!-- Klein - Valakas Watchman -->
++			<!-- <npc id="31540" x="183664" y="-114944" z="-3336" heading="20000" respawnTime="60sec" /> --> <!-- Klein - Valakas Watchman -->
+ 			<npc id="31539" x="180352" y="-111888" z="-5824" heading="24000" respawnTime="60sec" /> <!-- Vulcan - Blacksmith of Flame -->
+-			<npc id="31385" x="189872" y="-105152" z="-720" heading="49000" respawnTime="60sec" /> <!-- Heart of Volcano -->
+-			<npc id="31384" x="191296" y="-115472" z="-1576" heading="56000" respawnTime="60sec" /> <!-- Gatekeeper of Fire Dragon -->
+-			<npc id="31687" x="191456" y="-108448" z="-1016" respawnTime="60sec" /> <!-- Gatekeeper of Fire Dragon -->
+-			<npc id="31686" x="189584" y="-108768" z="-1008" heading="43000" respawnTime="60sec" /> <!-- Gatekeeper of Fire Dragon -->
++			<!-- <npc id="31384" x="191296" y="-115472" z="-1576" heading="56000" respawnTime="60sec" /> --> <!-- Gatekeeper of Fire Dragon -->
++			<!-- <npc id="31687" x="191456" y="-108448" z="-1016" respawnTime="60sec" /> --> <!-- Gatekeeper of Fire Dragon -->
++			<!-- <npc id="31686" x="189584" y="-108768" z="-1008" heading="43000" respawnTime="60sec" /> --> <!-- Gatekeeper of Fire Dragon -->
+ 			<npc id="33735" x="175891" y="-115807" z="-3776" respawnTime="60sec" /> <!-- Flame Flower -->
+ 			<npc id="33735" x="175965" y="-115886" z="-3784" respawnTime="60sec" /> <!-- Flame Flower -->
+ 			<npc id="33735" x="176070" y="-115778" z="-3784" respawnTime="60sec" /> <!-- Flame Flower -->
+diff --git dist/game/data/spawns/Goddard/ForgeOfGodsMonsters.xml dist/game/data/spawns/Goddard/ForgeOfGodsMonsters.xml
+index 111c215020b..55c93332bec 100644
+--- dist/game/data/spawns/Goddard/ForgeOfGodsMonsters.xml
++++ dist/game/data/spawns/Goddard/ForgeOfGodsMonsters.xml
+@@ -2,32 +2,32 @@
+ <list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xsd/spawns.xsd">
+ 	<spawn name="ForgeOfGodsMonsters">
+ 		<group>
+-			<npc id="21392" x="191675" y="-117374" z="-1848" heading="25506" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191713" y="-117641" z="-1856" heading="52989" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191501" y="-117473" z="-1856" heading="26042" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191493" y="-117263" z="-1856" heading="16747" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191661" y="-117042" z="-1856" heading="9584" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191850" y="-116991" z="-1856" heading="63401" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191956" y="-117163" z="-1856" heading="55038" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191985" y="-117380" z="-1856" heading="54481" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191877" y="-117536" z="-1856" heading="44735" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21392" x="191493" y="-117719" z="-1856" heading="3040" respawnTime="604800sec" /> <!-- Blazing Ifrit -->
+-			<npc id="21395" x="189755" y="-107185" z="-816" heading="44382" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="189487" y="-107308" z="-824" heading="46111" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="189181" y="-107338" z="-816" heading="60882" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="191463" y="-106633" z="-808" heading="44735" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="191232" y="-106769" z="-816" heading="47930" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="190984" y="-106861" z="-816" heading="48425" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="190774" y="-106901" z="-816" heading="41881" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="188989" y="-107302" z="-808" heading="56143" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="192610" y="-113739" z="-1376" heading="48327" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="192499" y="-113584" z="-1360" heading="29163" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="193639" y="-114174" z="-1376" heading="49449" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="193468" y="-114212" z="-1392" heading="54788" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="193269" y="-114204" z="-1400" heading="50191" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="193047" y="-114160" z="-1400" heading="50306" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="192898" y="-114041" z="-1400" heading="54660" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
+-			<npc id="21395" x="192750" y="-113926" z="-1392" heading="50449" respawnTime="604800sec" /> <!-- Elder Lavasaurus -->
++			<!-- <npc id="21392" x="191675" y="-117374" z="-1848" heading="25506" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191713" y="-117641" z="-1856" heading="52989" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191501" y="-117473" z="-1856" heading="26042" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191493" y="-117263" z="-1856" heading="16747" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191661" y="-117042" z="-1856" heading="9584" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191850" y="-116991" z="-1856" heading="63401" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191956" y="-117163" z="-1856" heading="55038" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191985" y="-117380" z="-1856" heading="54481" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191877" y="-117536" z="-1856" heading="44735" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++            <!-- <npc id="21392" x="191493" y="-117719" z="-1856" heading="3040" respawnTime="604800sec" /> --> <!-- Blazing Ifrit -->
++			<!-- <npc id="21395" x="189755" y="-107185" z="-816" heading="44382" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="189487" y="-107308" z="-824" heading="46111" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="189181" y="-107338" z="-816" heading="60882" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="191463" y="-106633" z="-808" heading="44735" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="191232" y="-106769" z="-816" heading="47930" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="190984" y="-106861" z="-816" heading="48425" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="190774" y="-106901" z="-816" heading="41881" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="188989" y="-107302" z="-808" heading="56143" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="192610" y="-113739" z="-1376" heading="48327" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="192499" y="-113584" z="-1360" heading="29163" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="193639" y="-114174" z="-1376" heading="49449" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="193468" y="-114212" z="-1392" heading="54788" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="193269" y="-114204" z="-1400" heading="50191" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="193047" y="-114160" z="-1400" heading="50306" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="192898" y="-114041" z="-1400" heading="54660" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
++            <!-- <npc id="21395" x="192750" y="-113926" z="-1392" heading="50449" respawnTime="604800sec" /> --> <!-- Elder Lavasaurus -->
+ 			<npc id="22634" x="181484" y="-120301" z="-3672" heading="11624" respawnTime="110sec" chaseRange="8000" /> <!-- Scarlet Stakato Worker -->
+ 			<npc id="22634" x="181323" y="-120629" z="-3672" heading="1610" respawnTime="110sec" chaseRange="8000" /> <!-- Scarlet Stakato Worker -->
+ 			<npc id="22634" x="181021" y="-120676" z="-3664" heading="50880" respawnTime="110sec" chaseRange="8000" /> <!-- Scarlet Stakato Worker -->
+@@ -752,10 +752,10 @@
+ 			<npc id="22649" x="178640" y="-110130" z="-5816" heading="51952" respawnTime="80sec" chaseRange="8000" /> <!-- Magma Drake -->
+ 			<npc id="22649" x="178110" y="-110515" z="-5832" heading="7246" respawnTime="80sec" chaseRange="8000" /> <!-- Magma Drake -->
+ 			<npc id="22649" x="182506" y="-107197" z="-6000" heading="3640" respawnTime="80sec" chaseRange="8000" /> <!-- Magma Drake -->
+-			<npc id="29037" x="192156" y="-108980" z="-1016" respawnTime="604800sec" /> <!-- Fenril Hound Kinaz - Valakas' Spawn -->
+-			<npc id="29036" x="189388" y="-109476" z="-1008" respawnTime="604800sec" /> <!-- Fenril Hound Uruz - Valakas' Spawn -->
+-			<npc id="29033" x="192878" y="-113361" z="-1360" respawnTime="604800sec" /> <!-- Fenril Hound Freki - Valakas' Spawn -->
+-			<npc id="29030" x="189964" y="-116820" z="-1576" respawnTime="604800sec" /> <!-- Fenril Hound Kerinne - Valakas' Spawn -->
++			<!-- <npc id="29037" x="192156" y="-108980" z="-1016" respawnTime="604800sec" /> --> <!-- Fenril Hound Kinaz - Valakas' Spawn -->
++			<!-- <npc id="29036" x="189388" y="-109476" z="-1008" respawnTime="604800sec" /> --> <!-- Fenril Hound Uruz - Valakas' Spawn -->
++			<!-- <npc id="29033" x="192878" y="-113361" z="-1360" respawnTime="604800sec" /> --> <!-- Fenril Hound Freki - Valakas' Spawn -->
++			<!-- <npc id="29030" x="189964" y="-116820" z="-1576" respawnTime="604800sec" /> --> <!-- Fenril Hound Kerinne - Raid boss in the corridor to the Hall of Flame -->
+ 		</group>
+ 	</spawn>
+ </list>
+diff --git dist/game/data/spawns/Goddard/HallOfFlames.xml dist/game/data/spawns/Goddard/HallOfFlames.xml
+new file mode 100644
+index 00000000000..4a6fab835ed
+--- /dev/null
++++ dist/game/data/spawns/Goddard/HallOfFlames.xml
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xsd/spawns.xsd">
++	<spawn name="HallOfFlames">
++		<group>
++			<npc id="31385" x="189872" y="-105152" z="-720" heading="49000" respawnTime="2sec" /> <!-- Heart of Volcano - Hall of Flames -->
++		</group>
++	</spawn>
++</list>
+diff --git dist/game/data/spawns/Goddard/TownOfGoddard.xml dist/game/data/spawns/Goddard/TownOfGoddard.xml
+index 88565e62b0b..fe36f13b38f 100644
+--- dist/game/data/spawns/Goddard/TownOfGoddard.xml
++++ dist/game/data/spawns/Goddard/TownOfGoddard.xml
+@@ -95,6 +95,7 @@
+ 			<npc id="33587" x="148524" y="-56315" z="-2776" heading="21672" respawnTime="60sec" /> <!-- Mentor Guide - Mentoring Manager -->
+ 			<npc id="33685" x="147385" y="-55290" z="-2728" heading="51838" respawnTime="60sec" /> <!-- Mysterious Butler - Ceremony of Chaos -->
+ 			<npc id="33946" x="148632" y="-56392" z="-2782" heading="7037" respawnTime="60sec" /> <!-- Adventure Guildsman -->
++			<npc id="34745" x="147422" y="-57392" z="-2807" heading="11351" respawnTime="60sec" /> <!-- Boromir - Taking Revenge on Valakas -->
+ 			<npc id="35366" x="145704" y="-57104" z="-2976" heading="39000" respawnTime="60sec" /> <!-- Manor Manager - Goddard -->
+ 			<npc id="35461" x="146416" y="-55568" z="-2760" heading="32000" respawnTime="60sec" /> <!-- Aida - Clan Hall Manager -->
+ 			<npc id="35462" x="146488" y="-55432" z="-2776" heading="1000" respawnTime="60sec" /> <!-- Kalmer - Clan Hall Gatekeeper -->
+diff --git dist/game/data/stats/npcs/29400-29499.xml dist/game/data/stats/npcs/29400-29499.xml
+index 19b20ffc9ce..b98a221af4b 100644
+--- dist/game/data/stats/npcs/29400-29499.xml
++++ dist/game/data/stats/npcs/29400-29499.xml
+@@ -649,8 +649,7 @@
+ 			<skill id="34815" level="9" /> <!-- Critical Damage Resistance -->
+ 		</skillList>
+ 	</npc>
+-	<npc id="29415" level="130" type="RaidBoss" name="Valakas" title="Fire Dragon">
+-		<!-- AUTO GENERATED NPC TODO: FIX IT -->
++	<npc id="29415" level="130" type="GrandBoss" name="Valakas" title="Fire Dragon">
+ 		<race>DRAGON</race>
+ 		<sex>MALE</sex>
+ 		<acquire exp="27965221655" sp="25168699" />
+@@ -669,6 +668,11 @@
+ 			</attribute>
+ 		</stats>
+ 		<status attackable="true" />
++		<ai type="MAGE" aggroRange="2500" clanHelpRange="300" isAggressive="false">
++			<clanList>
++				<clan>VALAKAS</clan>
++			</clanList>
++		</ai>
+ 		<collision>
+ 			<radius normal="190" />
+ 			<height normal="335" />
+@@ -684,6 +688,7 @@
+ 			<skill id="34815" level="9" /> <!-- Critical Damage Resistance -->
+ 			<skill id="34820" level="9" /> <!-- Received Damage Resistance -->
+ 		</skillList>
++		<corpseTime>21</corpseTime>
+ 		<dropLists>
+ 			<drop>
+ 				<group chance="100">
+diff --git dist/game/data/stats/skills/34800-34899.xml dist/game/data/stats/skills/34800-34899.xml
+index 7e6b84e8587..abb2702889b 100644
+--- dist/game/data/stats/skills/34800-34899.xml
++++ dist/game/data/stats/skills/34800-34899.xml
+@@ -996,109 +996,396 @@
+ 	<skill id="34862" toLevel="1" name="Valakas">
+ 		<!-- One of the six dragon children of Shillien. Valakas is the Fire Dragon who commands hot flames and summons fire storms. After taking severe wounds in the war against the gods, he has hidden away in the Forge of Gods. He is waiting for Shillien's call to end his long slumber. Due to Power of Flames, Anomaly Atk. Rate +200, P./ M. Accuracy +200. Additionally, Debilitation Resistance +1100. -->
+ 		<icon>icon.skillboss</icon>
+-		<operateType>A2</operateType>
++		<operateType>P</operateType>
++		<effects>
++			<effect name="Accuracy">
++				<amount>200</amount>
++				<mode>DIFF</mode>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34863" toLevel="1" name="Valakas: Trample">
+ 		<icon>icon.skill0000</icon>
+ 		<operateType>A1</operateType>
+-		<castRange>600</castRange>
++		<targetType>ENEMY</targetType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>600</affectRange>
++		<affectScope>RANGE</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2000</attributeValue>
++		<castRange>300</castRange>
+ 		<coolTime>1000</coolTime>
++		<effectPoint>-100</effectPoint>
++		<effectRange>300</effectRange>
+ 		<hitTime>1000</hitTime>
+ 		<isMagic>6</isMagic>
++		<magicLevel>130</magicLevel>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>100</power>
++				<pAtkMod>0.090</pAtkMod>
++				<pDefMod>0.01</pDefMod>
++			</effect>
++		</effects>
+ 	</skill>
+-	<skill id="34864" toLevel="1" name="Valakas: Trample">
++		<skill id="34864" toLevel="1" name="Valakas: Trample">
+ 		<icon>icon.skill0000</icon>
+ 		<operateType>A1</operateType>
+-		<castRange>600</castRange>
++		<targetType>ENEMY</targetType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>600</affectRange>
++		<affectScope>RANGE</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2000</attributeValue>
++		<castRange>300</castRange>
+ 		<coolTime>1000</coolTime>
++		<effectPoint>-100</effectPoint>
++		<effectRange>300</effectRange>
+ 		<hitTime>1000</hitTime>
+ 		<isMagic>6</isMagic>
++		<magicLevel>130</magicLevel>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>100</power>
++				<pAtkMod>0.090</pAtkMod>
++				<pDefMod>0.01</pDefMod>
++			</effect>
++		</effects>
+ 	</skill>
+-	<skill id="34865" toLevel="1" name="Valakas Tail Rash">
++		<skill id="34865" toLevel="1" name="Valakas Tail Rash">
+ 		<icon>icon.skill0000</icon>
+ 		<operateType>A1</operateType>
++		<targetType>SELF</targetType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectScope>SQUARE</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2000</attributeValue>
+ 		<coolTime>1000</coolTime>
++		<effectPoint>-100</effectPoint>
++		<fanRange>0;180;1500;600</fanRange>
+ 		<hitTime>1500</hitTime>
++		<reuseDelay>500</reuseDelay>
+ 		<isMagic>6</isMagic>
++		<magicLevel>130</magicLevel>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>100</power>
++				<pAtkMod>0.190</pAtkMod>
++				<pDefMod>0.01</pDefMod>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34866" toLevel="1" name="Valakas: Dragon Breath">
+ 		<!-- Breathes fire, dealing heavy magic damage and setting the target on fire for 20 sec. Inflicted status: Debilitation. Affected by Anomaly Resistance. Not affected by immunity. -->
+ 		<icon>icon.skill4683</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalTime>20</abnormalTime>
++		<abnormalType>DRAGON_BREATH</abnormalType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectScope>SQUARE</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2000</attributeValue>
++		<castRange>900</castRange>
+ 		<coolTime>500</coolTime>
++		<effectPoint>-100</effectPoint>
++		<fanRange>0;0;2500;900</fanRange>
+ 		<hitTime>3000</hitTime>
++		<reuseDelay>10000</reuseDelay> <!-- Test - No Exist Reuse -->
+ 		<isDebuff>true</isDebuff>
+-		<isMagic>7</isMagic>
++		<isMagic>7</isMagic> <!-- Magic Skill -->
++		<magicLevel>130</magicLevel>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>115550</power>
++			</effect>
++			<effect name="DamOverTime">
++				<power>20000</power>
++				<ticks>4</ticks>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34867" toLevel="1" name="Valakas: Tail Strike">
+ 		<!-- Hits the target with tail, knocking them down and dealing heavy damage. Inflicted status: Confusion (Fear, Aerial Yoke, Faint, Charm, Stun, Paralysis, Knockback, Knockdown). Affected by Anomaly Resistance. Not affected by immunity. -->
+ 		<icon>icon.skill4688</icon>
+-		<operateType>A1</operateType>
+-		<coolTime>500</coolTime>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalTime>3</abnormalTime>
++		<abnormalType>STUN</abnormalType>
++		<abnormalVisualEffect>STUN</abnormalVisualEffect>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectScope>SQUARE</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2000</attributeValue>
++		<coolTime>1000</coolTime>
++		<effectPoint>-100</effectPoint>
++		<fanRange>0;180;1500;600</fanRange>
+ 		<hitTime>1500</hitTime>
+-		<isDebuff>true</isDebuff>
++		<reuseDelay>1000</reuseDelay>
+ 		<isMagic>6</isMagic>
++		<magicLevel>130</magicLevel>
++		<trait>SHOCK</trait>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>100</power>
++				<pAtkMod>0.270</pAtkMod>
++				<pDefMod>0.01</pDefMod>
++			</effect>
++			<effect name="BlockActions" />
++		</effects>
+ 	</skill>
+ 	<skill id="34868" toLevel="1" name="Valakas: Fear">
+ 		<!-- Thunderous roar terrifies all the surrounding enemies. Inflicted status: Confusion (Fear, Aerial Yoke, Faint, Charm, Stun, Paralysis, Knockback, Knockdown). Affected by Anomaly Resistance. Not affected by immunity. -->
+ 		<icon>icon.skill4689</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalTime>10</abnormalTime>
++		<abnormalType>TURN_FLEE</abnormalType>
++		<abnormalVisualEffect>TURN_FLEE</abnormalVisualEffect>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>600</affectRange>
++		<affectScope>POINT_BLANK</affectScope>
+ 		<coolTime>500</coolTime>
++		<effectPoint>-100</effectPoint>
+ 		<hitTime>2000</hitTime>
+ 		<isDebuff>true</isDebuff>
+ 		<isMagic>7</isMagic>
++		<magicLevel>130</magicLevel>
++		<trait>DERANGEMENT</trait>
++		<effects>
++			<effect name="BlockControl" />
++			<effect name="Fear" />
++		</effects>
+ 	</skill>
+ 	<skill id="34869" toLevel="1" name="Valakas: Fury">
+ 		<!-- Valakas' destructive force rushes outward dealing heavy AoE damage. After 3 sec., terrifies enemies reducing their attack and defense capabilities. -->
+ 		<icon>icon.skill0325</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalResists>TURN_FLEE;KNOCKDOWN;DEPORT;SILENCE;PARALYZE;ABSORB;DISARM;SILENCE_PHYSICAL;SILENCE_ALL;CHANGEBODY;TURN_STONE;DERANGEMENT;AIRBIND;SLEEP;OBLIVION;MIRAGE;MIRAGE_TRAP;ROOT_MAGICALLY;ROOT_PHYSICALLY;STUN;PUBLIC_SLOT</abnormalResists>
++		<abnormalTime>3</abnormalTime>
++		<abnormalType>STUN</abnormalType>
++		<abnormalVisualEffect>STUN</abnormalVisualEffect>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>1200</affectRange>
++		<affectScope>POINT_BLANK</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2500</attributeValue>
++		<basicProperty>NONE</basicProperty>
++		<castRange>1200</castRange>
+ 		<coolTime>500</coolTime>
++		<effectPoint>-100</effectPoint>
+ 		<hitTime>2000</hitTime>
+ 		<isDebuff>true</isDebuff>
++		<magicCriticalRate>-5</magicCriticalRate>
+ 		<isMagic>6</isMagic>
++		<magicLevel>130</magicLevel>
++		<reuseDelay>6000</reuseDelay>
++		<trait>SHOCK</trait>
++		<effects>
++			<effect name="MagicalDamage">
++				<power>350000</power>
++				<overHit>true</overHit>
++			</effect>
++			<effect name="BlockActions">
++				<allowedSkills>10279;10517;10025;10776;11770;1904;11264;11093;13314;1912;7002;18721;18722;28203;30516;35190</allowedSkills>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34870" toLevel="1" name="Valakas: Earthquake">
+ 		<icon>icon.skill0000</icon>
+ 		<operateType>A1</operateType>
++		<targetType>SELF</targetType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectScope>POINT_BLANK</affectScope>
++		<castRange>1200</castRange>
+ 		<coolTime>500</coolTime>
+ 		<hitTime>10000</hitTime>
+ 		<isMagic>6</isMagic>
++		<reuseDelay>15000</reuseDelay>
+ 	</skill>
+ 	<skill id="34871" toLevel="1" name="Fire Energy Earthquake">
+ 		<!-- Sudden Death -->
+ 		<icon>icon.skill0000</icon>
+ 		<operateType>A1</operateType>
++		<targetType>SELF</targetType>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>1200</affectRange>
++		<affectScope>POINT_BLANK</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2500</attributeValue>
++		<basicProperty>NONE</basicProperty>
++		<castRange>1200</castRange>
+ 		<coolTime>500</coolTime>
++		<effectPoint>-100</effectPoint>
++		<hitTime>10000</hitTime>
++		<magicLevel>130</magicLevel>
+ 		<isMagic>6</isMagic>
++		<effects>
++			<effect name="PhysicalDamage">
++				<power>4534255</power>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34872" toLevel="1" name="Valakas: Meteor Storm">
+ 		<!-- Knocks the target down with a powerful blow. Not affected by immunity. The effect cannot be removed. -->
+ 		<icon>icon.skill3080</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalResists>TURN_FLEE;KNOCKDOWN;DEPORT;SILENCE;PARALYZE;ABSORB;DISARM;SILENCE_PHYSICAL;SILENCE_ALL;CHANGEBODY;TURN_STONE;DERANGEMENT;AIRBIND;SLEEP;OBLIVION;MIRAGE;MIRAGE_TRAP;ROOT_MAGICALLY;ROOT_PHYSICALLY;STUN;PUBLIC_SLOT</abnormalResists>
++		<abnormalTime>5</abnormalTime>
++		<abnormalType>KNOCKDOWN</abnormalType>
++		<abnormalVisualEffect>KNOCKDOWN</abnormalVisualEffect>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>200</affectRange>
++		<affectScope>POINT_BLANK</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2500</attributeValue>
++		<basicProperty>NONE</basicProperty>
++		<coolTime>1</coolTime>
++		<effectPoint>-100</effectPoint>
+ 		<hitTime>4000</hitTime>
+ 		<isDebuff>true</isDebuff>
++		<magicCriticalRate>-5</magicCriticalRate>
++		<magicLevel>130</magicLevel>
+ 		<isMagic>6</isMagic>
++		<reuseDelay>5000</reuseDelay>
++		<trait>KNOCKDOWN</trait>
++		<effects>
++			<effect name="MagicalDamage">
++				<power>150000</power>
++				<overHit>true</overHit>
++			</effect>
++			<effect name="BlockActions">
++				<allowedSkills>10279;10517;10025;10776;11770;1904;11264;11093;13314;1912;7002;18721;18722;28203;30516;35190</allowedSkills>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34873" toLevel="1" name="Valakas: Berserk">
+ 		<!-- Valakas' power reaches its limit and erupts from his body with flames and fire. Dealt damage is significantly increased, received damage - decreased. -->
+ 		<icon>icon.skill1062</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalResists>TURN_FLEE;KNOCKDOWN;DEPORT;SILENCE;PARALYZE;ABSORB;DISARM;SILENCE_PHYSICAL;SILENCE_ALL;CHANGEBODY;TURN_STONE;DERANGEMENT;AIRBIND;SLEEP;OBLIVION;MIRAGE;MIRAGE_TRAP;ROOT_MAGICALLY;ROOT_PHYSICALLY;STUN;PUBLIC_SLOT</abnormalResists>
++		<abnormalTime>30</abnormalTime>
++		<abnormalVisualEffect>V_BOSS_VALA_BERSERK_AVE</abnormalVisualEffect>
++		<affectScope>SINGLE</affectScope>
++		<basicProperty>NONE</basicProperty>
++		<effectPoint>100</effectPoint>
+ 		<coolTime>500</coolTime>
++		<hitCancelTime>1.0</hitCancelTime>
+ 		<hitTime>2000</hitTime>
+-		<isMagic>6</isMagic>
++		<magicCriticalRate>-5</magicCriticalRate>
++		<magicLevel>130</magicLevel>
++		<isMagic>7</isMagic>
++		<reuseDelay>1000</reuseDelay>
++		<specialLevel>-1</specialLevel>
++		<effects>
++			<effect name="PhysicalAttack">
++            <amount>30</amount>
++            <mode>PER</mode>
++        </effect>
++        <effect name="MagicalDefence">
++            <amount>50</amount>
++            <mode>PER</mode>
++        </effect>
++        <effect name="PhysicalDefence">
++            <amount>50</amount>
++            <mode>PER</mode>
++        </effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34874" toLevel="1" name="Valakas: Weakness">
+ 		<!-- The fire loses its power for some time. Dealt damage is significantly decreased, received damage - increased. -->
+ 		<icon>icon.skill1235</icon>
+-		<operateType>A1</operateType>
+-		<isDebuff>true</isDebuff>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalTime>10</abnormalTime>
++		<abnormalType>PD_DOWN</abnormalType>
++		<abnormalVisualEffect>V_BOSS_PERION_CHAIN_AVE</abnormalVisualEffect>
++		<affectScope>SINGLE</affectScope>
++		<basicProperty>NONE</basicProperty>
++		<effectPoint>100</effectPoint>
+ 		<isMagic>7</isMagic>
++		<reuseDelay>10000</reuseDelay>
++		<specialLevel>-1</specialLevel>
++        <effects>
++			<effect name="PhysicalAttack">
++				<amount>-70</amount>
++ 				<mode>PER</mode>
++			</effect>
++			<effect name="MagicalAttack">
++				<amount>-70</amount>
++				<mode>PER</mode>
++			</effect>
++			<effect name="PhysicalDefence">
++				<amount>-100</amount> 
++ 				<mode>PER</mode>
++			</effect>
++			<effect name="MagicalDefence">
++				<amount>-100</amount>
++ 				<mode>PER</mode>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34875" toLevel="1" name="Valakas: Barrier">
+ 		<!-- Valakas is surrounded by fire energy. A successful attack against the barrier makes Valakas weaker. <Valakas: Weakness>. The fire loses its power for some time. Dealt damage is significantly decreased, received damage - increased. -->
+ 		<icon>icon.skill32540</icon>
+-		<operateType>A1</operateType>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalTime>10</abnormalTime>
++		<abnormalType>INVINCIBILITY_SPECIAL</abnormalType>
++		<abnormalVisualEffect>H_VALAKAS_RE_BARRIER_AVE</abnormalVisualEffect>
++		<affectScope>SINGLE</affectScope>
++		<basicProperty>NONE</basicProperty>
++		<effectPoint>100</effectPoint>
+ 		<isMagic>7</isMagic>
++		<reuseDelay>1000</reuseDelay>
++		<specialLevel>-1</specialLevel>
++		<effects>
++			<effect name="DamageBlock">
++				<type>BLOCK_HP</type>
++			</effect>
++			<effect name="DamageBlock">
++				<type>BLOCK_MP</type>
++			</effect>
++			<effect name="DispelByCategory">
++				<slot>DEBUFF</slot>
++				<rate>100</rate>
++				<max>30</max>
++			</effect>
++			<effect name="DebuffBlock" />
++			<effect name="DefenceTrait">
++				<HOLD>100</HOLD>
++				<SLEEP>100</SLEEP>
++				<DERANGEMENT>100</DERANGEMENT>
++				<CHANGEBODY>100</CHANGEBODY>
++				<PARALYZE>100</PARALYZE>
++				<SHOCK>100</SHOCK>
++				<KNOCKBACK>100</KNOCKBACK>
++				<KNOCKDOWN>100</KNOCKDOWN>
++				<AIRBIND>100</AIRBIND>
++				<TURN_STONE>100</TURN_STONE>
++			</effect>
++			<effect name="BlockAbnormalSlot">
++				<slot>INVINCIBILITY_SPECIAL</slot>
++			</effect>
++			<effect name="ResistDispelByCategory">
++				<amount>-100</amount>
++				<slot>ALL</slot>
++			</effect>
++			<effect name="ResistAbnormalByCategory">
++				<amount>-100</amount>
++				<slot>DEBUFF</slot>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34876" toLevel="1" name="Valakas: Barrier Break">
+ 		<!-- Animation skill. -->
+@@ -1110,11 +1397,39 @@
+ 	<skill id="34877" toLevel="1" name="Valakas: Inhale">
+ 		<!-- Pulls and stuns the target. Not affected by immunity. The effect cannot be removed. -->
+ 		<icon>icon.skill5012</icon>
+-		<operateType>A1</operateType>
+-		<coolTime>500</coolTime>
+-		<hitTime>1000</hitTime>
++		<operateType>A2</operateType>
++		<targetType>SELF</targetType>
++		<abnormalLevel>1</abnormalLevel>
++		<abnormalResists>TURN_FLEE;KNOCKDOWN;DEPORT;SILENCE;PARALYZE;ABSORB;DISARM;SILENCE_PHYSICAL;SILENCE_ALL;CHANGEBODY;TURN_STONE;DERANGEMENT;AIRBIND;SLEEP;OBLIVION;MIRAGE;MIRAGE_TRAP;ROOT_MAGICALLY;ROOT_PHYSICALLY;STUN;PUBLIC_SLOT</abnormalResists>
++		<abnormalTime>3</abnormalTime>
++		<abnormalType>STUN</abnormalType>
++		<abnormalVisualEffect>STUN</abnormalVisualEffect>
++		<affectObject>NOT_FRIEND</affectObject>
++		<affectRange>1200</affectRange>
++		<affectScope>POINT_BLANK</affectScope>
++		<attributeType>FIRE</attributeType>
++		<attributeValue>2500</attributeValue>
++		<effectPoint>-5000</effectPoint>
++		<hitTime>1500</hitTime>
++		<activateRate>100</activateRate>
++		<basicProperty>PHYSICAL</basicProperty>
++		<castRange>2000</castRange>
+ 		<isDebuff>true</isDebuff>
+-		<isMagic>6</isMagic>
++		<lvlBonusRate>200</lvlBonusRate>
++		<magicCriticalRate>5</magicCriticalRate>
++		<magicLevel>130</magicLevel>
++		<reuseDelay>5000</reuseDelay>
++		<trait>PULL</trait>
++		<effects>
++			<effect name="BlockActions">
++				<allowedSkills>10279;10517;10025;10776;11770;1904;11264;11093;13314;1912;7002;18721;18722;28203;30516;35190</allowedSkills>
++			</effect>
++			<effect name="PullBack">
++				<speed>600</speed>
++				<delay>600</delay>
++				<perfectionRate>95</perfectionRate>
++			</effect>
++		</effects>
+ 	</skill>
+ 	<skill id="34878" toLevel="1" name="Valakas' Mark">
+ 		<!-- A long time ago Valakas' Breath made Boromir immortal, and now he's gathering troops to exact vengeance on the Fire Dragon. -->
+diff --git dist/game/data/zones/effect.xml dist/game/data/zones/effect.xml
+index 160283aafcd..2cd850ef6f8 100644
+--- dist/game/data/zones/effect.xml
++++ dist/game/data/zones/effect.xml
+@@ -1317,21 +1317,56 @@
+ 		<node X="214340" Y="-114148" />
+ 	</zone>
+ 	<zone name="valakas_lava_6" type="EffectZone" shape="NPoly" minZ="-1768" maxZ="-1568"> <!-- [26_14] -->
+-		<stat name="skillIdLvl" val="4150-7;" /> <!-- s_area_fire7 -->
++		<stat name="skillIdLvl" val="4150-10;" /> <!-- s_area_fire10 -->
+ 		<stat name="chance" val="50" />
+ 		<!-- stat name="unitTick" val="9" / -->
+ 		<stat name="initialDelay" val="1000" />
+ 		<stat name="default_enabled" val="true" />
+-		<stat name="reuse" val="6000" /> <!-- Guess -->
+-		<node X="213916" Y="-115660" />
+-		<node X="214220" Y="-114648" />
+-		<node X="213392" Y="-113112" />
+-		<node X="212100" Y="-113460" />
+-		<node X="211292" Y="-115164" />
+-		<node X="211948" Y="-115196" />
+-		<node X="211976" Y="-115628" />
+-		<node X="212696" Y="-116036" />
+-		<node X="213200" Y="-116136" />
++		<stat name="reuse" val="5000" />
++		<node X="213762" Y="-114276" />
++		<node X="213737" Y="-113960" />
++		<node X="213645" Y="-113733" />
++		<node X="213712" Y="-113591" />
++		<node X="213749" Y="-113526" />
++		<node X="213780" Y="-113424" />
++		<node X="213704" Y="-113316" />
++		<node X="213492" Y="-113246" />
++		<node X="213376" Y="-113129" />
++		<node X="213247" Y="-113056" />
++		<node X="213075" Y="-113111" />
++		<node X="213030" Y="-113292" />
++		<node X="212926" Y="-113315" />
++		<node X="212721" Y="-113271" />
++		<node X="212264" Y="-113378" />
++		<node X="212071" Y="-113418" />
++		<node X="211977" Y="-113568" />
++		<node X="211961" Y="-113710" />
++		<node X="212028" Y="-113844" />
++		<node X="211988" Y="-113969" />
++		<node X="211631" Y="-114246" />
++		<node X="211559" Y="-114667" />
++		<node X="211372" Y="-114937" />
++		<node X="211386" Y="-115144" />
++		<node X="211843" Y="-115247" />
++		<node X="211937" Y="-115416" />
++		<node X="211947" Y="-115586" />
++		<node X="212028" Y="-115743" />
++		<node X="212286" Y="-115809" />
++		<node X="212625" Y="-116022" />
++		<node X="213021" Y="-116141" />
++		<node X="213243" Y="-116083" />
++		<node X="213482" Y="-115984" />
++		<node X="213634" Y="-115757" />
++		<node X="213867" Y="-115739" />
++		<node X="213998" Y="-115689" />
++		<node X="214094" Y="-115406" />
++		<node X="214185" Y="-115172" />
++		<node X="214183" Y="-114874" />
++		<node X="214209" Y="-114749" />
++		<node X="214062" Y="-114641" />
++		<node X="213911" Y="-114531" />
++		<node X="213822" Y="-114585" />
++		<node X="213751" Y="-114509" />
+ 	</zone>
+ 	<zone name="valakas_lava_7" type="EffectZone" shape="NPoly" minZ="-1764" maxZ="-1564"> <!-- [26_14] -->
+ 		<stat name="skillIdLvl" val="4150-7;" /> <!-- s_area_fire7 -->
+@@ -2646,4 +2681,11 @@
+ 		<node X="58487" Y="-45550" />
+ 		<node X="58407" Y="-45289" />
+ 	</zone>
++	<zone name="Valakas Local Danger" type="EffectZone" shape="NPoly" minZ="-2572" maxZ="5428">
++		<stat name="showDangerIcon" val="true" />
++		<node X="196866" Y="-130845" />
++		<node X="229289" Y="-130860" />
++		<node X="229176" Y="-98508" />
++		<node X="196880" Y="-98498" />
++	</zone>
+ </list>
+\ No newline at end of file
+diff --git dist/game/data/zones/no_bookmark.xml dist/game/data/zones/no_bookmark.xml
+index 5fed72f7cc5..05f4896e0cd 100644
+--- dist/game/data/zones/no_bookmark.xml
++++ dist/game/data/zones/no_bookmark.xml
+@@ -8320,4 +8320,17 @@
+ 		<node X="120857" Y="121987" />
+ 		<node X="120900" Y="109162" />
+ 	</zone>
++	<zone name="Hall_of_Flame_no_bookmark" type="ConditionZone" shape="NPoly" minZ="-2532" maxZ="-1">
++		<node X="191598" Y="-108117" />
++		<node X="192990" Y="-106747" />
++		<node X="193653" Y="-105007" />
++		<node X="193000" Y="-103673" />
++		<node X="188027" Y="-103765" />
++		<node X="187921" Y="-105401" />
++		<node X="187661" Y="-106560" />
++		<node X="188090" Y="-107559" />
++		<node X="188760" Y="-108727" />
++		<node X="189865" Y="-108827" />
++		<node X="192009" Y="-108228" />
++	</zone>
+ </list>
+\ No newline at end of file
+diff --git dist/game/data/zones/no_pvp.xml dist/game/data/zones/no_pvp.xml
+index 290fed6c641..9d53ebf5e81 100644
+--- dist/game/data/zones/no_pvp.xml
++++ dist/game/data/zones/no_pvp.xml
+@@ -5,4 +5,23 @@
+ 		<node X="0" Y="0" />
+ 		<node X="0" Y="0" />
+ 	</zone>
++	<zone name="Hall_of_Flame_NoPvPZone" type="NoPvPZone" shape="NPoly" minZ="-2532" maxZ="-1">
++		<node X="191598" Y="-108117" />
++		<node X="192990" Y="-106747" />
++		<node X="193653" Y="-105007" />
++		<node X="193000" Y="-103673" />
++		<node X="188027" Y="-103765" />
++		<node X="187921" Y="-105401" />
++		<node X="187661" Y="-106560" />
++		<node X="188090" Y="-107559" />
++		<node X="188760" Y="-108727" />
++		<node X="189865" Y="-108827" />
++		<node X="192009" Y="-108228" />
++	</zone>
++	<zone name="Valakas_No_PvP_Zone" type="NoPvPZone" shape="NPoly" minZ="-2572" maxZ="5428">
++		<node X="196866" Y="-130845" />
++		<node X="229289" Y="-130860" />
++		<node X="229176" Y="-98508" />
++		<node X="196880" Y="-98498" />
++	</zone>
+ </list>
+\ No newline at end of file
+diff --git dist/game/data/zones/no_summon_friend.xml dist/game/data/zones/no_summon_friend.xml
+index be6bfecb2a7..b692c325879 100644
+--- dist/game/data/zones/no_summon_friend.xml
++++ dist/game/data/zones/no_summon_friend.xml
+@@ -304,4 +304,17 @@
+ 		<node X="-87121" Y="211950" />
+ 		<node X="-82180" Y="211846" />
+ 	</zone>
++	<zone name="Hall_of_Flame_no_summon" type="NoSummonFriendZone" shape="NPoly" minZ="-2532" maxZ="-1">
++		<node X="191598" Y="-108117" />
++		<node X="192990" Y="-106747" />
++		<node X="193653" Y="-105007" />
++		<node X="193000" Y="-103673" />
++		<node X="188027" Y="-103765" />
++		<node X="187921" Y="-105401" />
++		<node X="187661" Y="-106560" />
++		<node X="188090" Y="-107559" />
++		<node X="188760" Y="-108727" />
++		<node X="189865" Y="-108827" />
++		<node X="192009" Y="-108228" />
++	</zone>
+ </list>
+\ No newline at end of file
